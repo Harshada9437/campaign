@@ -16,6 +16,56 @@ public class RegisterBo {
     private String dob;
     private String resource;
     private int noOfPerson;
+    private int customerId;
+    private int campaignId;
+
+    public String getFullName() {
+        return fullName;
+    }
+
+    public void setFullName(String fullName) {
+        this.fullName = fullName;
+    }
+
+    public String getEmail() {
+        return email;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
+    }
+
+    public String getDate() {
+        return date;
+    }
+
+    public void setDate(String date) {
+        this.date = date;
+    }
+
+    public String getTimeSlot() {
+        return timeSlot;
+    }
+
+    public void setTimeSlot(String timeSlot) {
+        this.timeSlot = timeSlot;
+    }
+
+    public String getMobile() {
+        return mobile;
+    }
+
+    public void setMobile(String mobile) {
+        this.mobile = mobile;
+    }
+
+    public String getLocality() {
+        return locality;
+    }
+
+    public void setLocality(String locality) {
+        this.locality = locality;
+    }
 
     public String getGender() {
         return gender;
@@ -57,52 +107,28 @@ public class RegisterBo {
         this.noOfPerson = noOfPerson;
     }
 
+    public int getCampaignId() {
+        return campaignId;
+    }
+
+    public void setCampaignId(int campaignId) {
+        this.campaignId = campaignId;
+    }
+
+    public int getCustomerId() {
+        return customerId;
+    }
+
+    public void setCustomerId(int customerId) {
+        this.customerId = customerId;
+    }
+
     public String getToken() {
         return token;
     }
 
     public void setToken(String token) {
         this.token = token;
-    }
-
-    public String getTimeSlot() {return timeSlot;}
-
-    public void setTimeSlot(String timeSlot) {this.timeSlot = timeSlot;}
-
-    public String getDate() {return date;}
-
-    public void setDate(String date) {this.date = date;}
-
-    public String getFullName() {
-        return fullName;
-    }
-
-    public void setFullName(String fullName) {
-        this.fullName = fullName;
-    }
-
-    public String getEmail() {
-        return email;
-    }
-
-    public void setEmail(String email) {
-        this.email = email;
-    }
-
-    public String getMobile() {
-        return mobile;
-    }
-
-    public void setMobile(String mobile) {
-        this.mobile = mobile;
-    }
-
-    public String getLocality() {
-        return locality;
-    }
-
-    public void setLocality(String locality) {
-        this.locality = locality;
     }
 
     @Override
@@ -113,6 +139,8 @@ public class RegisterBo {
         RegisterBo that = (RegisterBo) o;
 
         if (noOfPerson != that.noOfPerson) return false;
+        if (customerId != that.customerId) return false;
+        if (campaignId != that.campaignId) return false;
         if (fullName != null ? !fullName.equals(that.fullName) : that.fullName != null) return false;
         if (email != null ? !email.equals(that.email) : that.email != null) return false;
         if (date != null ? !date.equals(that.date) : that.date != null) return false;
@@ -140,6 +168,8 @@ public class RegisterBo {
         result = 31 * result + (dob != null ? dob.hashCode() : 0);
         result = 31 * result + (resource != null ? resource.hashCode() : 0);
         result = 31 * result + noOfPerson;
+        result = 31 * result + customerId;
+        result = 31 * result + campaignId;
         return result;
     }
 
@@ -158,6 +188,8 @@ public class RegisterBo {
                 ", dob='" + dob + '\'' +
                 ", resource='" + resource + '\'' +
                 ", noOfPerson=" + noOfPerson +
+                ", customerId=" + customerId +
+                ", campaignId=" + campaignId +
                 '}';
     }
 }

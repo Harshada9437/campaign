@@ -1,9 +1,14 @@
-package com.campaign.rest.request.campaign;
+package com.campaign.dto.campaign;
 
-public class HeaderDetails {
+import com.campaign.rest.request.campaign.SmsDetails;
+import com.campaign.rest.request.campaign.SmtpDetails;
+
+public class HeaderDTO {
     private int id;
-    private int smsId;
-    private int smtpId;
+    private SmsDetails sms;
+    private SmtpDetails smtp;
+    private int smsAccId;
+    private int emailAccId;
     private String name;
     private String info;
     private String logo;
@@ -13,6 +18,22 @@ public class HeaderDetails {
     private String border;
     private String domain;
 
+    public SmsDetails getSms() {
+        return sms;
+    }
+
+    public void setSms(SmsDetails sms) {
+        this.sms = sms;
+    }
+
+    public SmtpDetails getSmtp() {
+        return smtp;
+    }
+
+    public void setSmtp(SmtpDetails smtp) {
+        this.smtp = smtp;
+    }
+
     public int getId() {
         return id;
     }
@@ -21,20 +42,20 @@ public class HeaderDetails {
         this.id = id;
     }
 
-    public int getSmsId() {
-        return smsId;
+    public int getSmsAccId() {
+        return smsAccId;
     }
 
-    public void setSmsId(int smsId) {
-        this.smsId = smsId;
+    public void setSmsAccId(int smsAccId) {
+        this.smsAccId = smsAccId;
     }
 
-    public int getSmtpId() {
-        return smtpId;
+    public int getEmailAccId() {
+        return emailAccId;
     }
 
-    public void setSmtpId(int smtpId) {
-        this.smtpId = smtpId;
+    public void setEmailAccId(int emailAccId) {
+        this.emailAccId = emailAccId;
     }
 
     public String getName() {
@@ -106,26 +127,30 @@ public class HeaderDetails {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
 
-        HeaderDetails that = (HeaderDetails) o;
+        HeaderDTO headerDTO = (HeaderDTO) o;
 
-        if (id != that.id) return false;
-        if (smsId != that.smsId) return false;
-        if (smtpId != that.smtpId) return false;
-        if (name != null ? !name.equals(that.name) : that.name != null) return false;
-        if (info != null ? !info.equals(that.info) : that.info != null) return false;
-        if (logo != null ? !logo.equals(that.logo) : that.logo != null) return false;
-        if (icon != null ? !icon.equals(that.icon) : that.icon != null) return false;
-        if (background != null ? !background.equals(that.background) : that.background != null) return false;
-        if (forecolor != null ? !forecolor.equals(that.forecolor) : that.forecolor != null) return false;
-        if (border != null ? !border.equals(that.border) : that.border != null) return false;
-        return domain != null ? domain.equals(that.domain) : that.domain == null;
+        if (id != headerDTO.id) return false;
+        if (smsAccId != headerDTO.smsAccId) return false;
+        if (emailAccId != headerDTO.emailAccId) return false;
+        if (sms != null ? !sms.equals(headerDTO.sms) : headerDTO.sms != null) return false;
+        if (smtp != null ? !smtp.equals(headerDTO.smtp) : headerDTO.smtp != null) return false;
+        if (name != null ? !name.equals(headerDTO.name) : headerDTO.name != null) return false;
+        if (info != null ? !info.equals(headerDTO.info) : headerDTO.info != null) return false;
+        if (logo != null ? !logo.equals(headerDTO.logo) : headerDTO.logo != null) return false;
+        if (icon != null ? !icon.equals(headerDTO.icon) : headerDTO.icon != null) return false;
+        if (background != null ? !background.equals(headerDTO.background) : headerDTO.background != null) return false;
+        if (forecolor != null ? !forecolor.equals(headerDTO.forecolor) : headerDTO.forecolor != null) return false;
+        if (border != null ? !border.equals(headerDTO.border) : headerDTO.border != null) return false;
+        return domain != null ? domain.equals(headerDTO.domain) : headerDTO.domain == null;
     }
 
     @Override
     public int hashCode() {
         int result = id;
-        result = 31 * result + smsId;
-        result = 31 * result + smtpId;
+        result = 31 * result + (sms != null ? sms.hashCode() : 0);
+        result = 31 * result + (smtp != null ? smtp.hashCode() : 0);
+        result = 31 * result + smsAccId;
+        result = 31 * result + emailAccId;
         result = 31 * result + (name != null ? name.hashCode() : 0);
         result = 31 * result + (info != null ? info.hashCode() : 0);
         result = 31 * result + (logo != null ? logo.hashCode() : 0);
@@ -139,10 +164,12 @@ public class HeaderDetails {
 
     @Override
     public String toString() {
-        return "HeaderDetails{" +
+        return "HeaderDTO{" +
                 "id=" + id +
-                ", smsId=" + smsId +
-                ", smtpId=" + smtpId +
+                ", sms=" + sms +
+                ", smtp=" + smtp +
+                ", smsAccId=" + smsAccId +
+                ", emailAccId=" + emailAccId +
                 ", name='" + name + '\'' +
                 ", info='" + info + '\'' +
                 ", logo='" + logo + '\'' +

@@ -7,7 +7,9 @@ public class CampaignCreateRequest {
    private int noOfPerson;
    private int isallowOnFull;
    private int headerId;
+   private int isPublished;
    private String name;
+   private String emailSubject;
    private String desc;
    private String confirmSms;
    private String confirmEmail;
@@ -16,6 +18,14 @@ public class CampaignCreateRequest {
    private String slotFullText;
    private List<SlotDetails> slots;
    private List<String> dates;
+
+   public String getEmailSubject() {
+      return emailSubject;
+   }
+
+   public void setEmailSubject(String emailSubject) {
+      this.emailSubject = emailSubject;
+   }
 
    public int getHeaderId() {
       return headerId;
@@ -43,6 +53,14 @@ public class CampaignCreateRequest {
 
    public int getNoOfPerson() {
       return noOfPerson;
+   }
+
+   public int getIsPublished() {
+      return isPublished;
+   }
+
+   public void setIsPublished(int isPublished) {
+      this.isPublished = isPublished;
    }
 
    public void setNoOfPerson(int noOfPerson) {
@@ -132,7 +150,9 @@ public class CampaignCreateRequest {
       if (noOfPerson != that.noOfPerson) return false;
       if (isallowOnFull != that.isallowOnFull) return false;
       if (headerId != that.headerId) return false;
+      if (isPublished != that.isPublished) return false;
       if (name != null ? !name.equals(that.name) : that.name != null) return false;
+      if (emailSubject != null ? !emailSubject.equals(that.emailSubject) : that.emailSubject != null) return false;
       if (desc != null ? !desc.equals(that.desc) : that.desc != null) return false;
       if (confirmSms != null ? !confirmSms.equals(that.confirmSms) : that.confirmSms != null) return false;
       if (confirmEmail != null ? !confirmEmail.equals(that.confirmEmail) : that.confirmEmail != null) return false;
@@ -150,7 +170,9 @@ public class CampaignCreateRequest {
       result = 31 * result + noOfPerson;
       result = 31 * result + isallowOnFull;
       result = 31 * result + headerId;
+      result = 31 * result + isPublished;
       result = 31 * result + (name != null ? name.hashCode() : 0);
+      result = 31 * result + (emailSubject != null ? emailSubject.hashCode() : 0);
       result = 31 * result + (desc != null ? desc.hashCode() : 0);
       result = 31 * result + (confirmSms != null ? confirmSms.hashCode() : 0);
       result = 31 * result + (confirmEmail != null ? confirmEmail.hashCode() : 0);
@@ -169,7 +191,9 @@ public class CampaignCreateRequest {
               ", noOfPerson=" + noOfPerson +
               ", isallowOnFull=" + isallowOnFull +
               ", headerId=" + headerId +
+              ", isPublished=" + isPublished +
               ", name='" + name + '\'' +
+              ", emailSubject='" + emailSubject + '\'' +
               ", desc='" + desc + '\'' +
               ", confirmSms='" + confirmSms + '\'' +
               ", confirmEmail='" + confirmEmail + '\'' +

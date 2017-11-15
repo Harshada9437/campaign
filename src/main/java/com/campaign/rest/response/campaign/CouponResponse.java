@@ -4,6 +4,15 @@ public class CouponResponse {
     private String date;
     private String time;
     private int isAvailable;
+    private int capacity;
+
+    public int getCapacity() {
+        return capacity;
+    }
+
+    public void setCapacity(int capacity) {
+        this.capacity = capacity;
+    }
 
     public String getDate() {
         return date;
@@ -35,6 +44,7 @@ public class CouponResponse {
                 "date='" + date + '\'' +
                 ", time='" + time + '\'' +
                 ", isAvailable=" + isAvailable +
+                ", capacity=" + capacity +
                 '}';
     }
 }

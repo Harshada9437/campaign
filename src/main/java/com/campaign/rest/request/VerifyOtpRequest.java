@@ -3,6 +3,15 @@ package com.campaign.rest.request;
 public class VerifyOtpRequest {
     private String mobile;
     private String otp;
+    private int campaignId;
+
+    public int getCampaignId() {
+        return campaignId;
+    }
+
+    public void setCampaignId(int campaignId) {
+        this.campaignId = campaignId;
+    }
 
     public String getMobile() {
         return mobile;
@@ -27,6 +36,7 @@ public class VerifyOtpRequest {
 
         VerifyOtpRequest that = (VerifyOtpRequest) o;
 
+        if (campaignId != that.campaignId) return false;
         if (mobile != null ? !mobile.equals(that.mobile) : that.mobile != null) return false;
         return otp != null ? otp.equals(that.otp) : that.otp == null;
     }
@@ -35,6 +45,7 @@ public class VerifyOtpRequest {
     public int hashCode() {
         int result = mobile != null ? mobile.hashCode() : 0;
         result = 31 * result + (otp != null ? otp.hashCode() : 0);
+        result = 31 * result + campaignId;
         return result;
     }
 
@@ -43,6 +54,7 @@ public class VerifyOtpRequest {
         return "VerifyOtpRequest{" +
                 "mobile='" + mobile + '\'' +
                 ", otp='" + otp + '\'' +
+                ", campaignId=" + campaignId +
                 '}';
     }
 }

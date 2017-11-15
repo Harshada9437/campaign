@@ -2,8 +2,17 @@ package com.campaign.bo.request;
 
 public class UpdateSlotRequestBO {
     private int id;
+    private int campaignId;
     private String time;
     private String date;
+
+    public int getCampaignId() {
+        return campaignId;
+    }
+
+    public void setCampaignId(int campaignId) {
+        this.campaignId = campaignId;
+    }
 
     public int getId() {
         return id;
@@ -37,6 +46,7 @@ public class UpdateSlotRequestBO {
         UpdateSlotRequestBO that = (UpdateSlotRequestBO) o;
 
         if (id != that.id) return false;
+        if (campaignId != that.campaignId) return false;
         if (time != null ? !time.equals(that.time) : that.time != null) return false;
         return date != null ? date.equals(that.date) : that.date == null;
     }
@@ -46,6 +56,7 @@ public class UpdateSlotRequestBO {
         int result = id;
         result = 31 * result + (time != null ? time.hashCode() : 0);
         result = 31 * result + (date != null ? date.hashCode() : 0);
+        result = 31 * result + campaignId;
         return result;
     }
 
@@ -53,6 +64,7 @@ public class UpdateSlotRequestBO {
     public String toString() {
         return "UpdateSlotRequestBO{" +
                 "id=" + id +
+                ", campaignId=" + campaignId +
                 ", time='" + time + '\'' +
                 ", date='" + date + '\'' +
                 '}';

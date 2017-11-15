@@ -1,20 +1,15 @@
-package com.campaign.dto.customer;
-/**
- * Created by System-3 on 11/30/2016.
- */
+package com.campaign.rest.request.customer;
 
 /**
- * Created by System-3 on 11/30/2016.
+ * Created by Shubham on 6/29/2017.
  */
-public class RegisterDto
-{
+public class OtpRequest {
     private String fullName;
     private String email;
     private String date;
     private String timeSlot;
     private String mobile;
     private String locality;
-    private String token;
     private String gender;
     private String remark;
     private String dob;
@@ -28,6 +23,54 @@ public class RegisterDto
 
     public void setCampaignId(int campaignId) {
         this.campaignId = campaignId;
+    }
+
+    public String getFullName() {
+        return fullName;
+    }
+
+    public void setFullName(String fullName) {
+        this.fullName = fullName;
+    }
+
+    public String getEmail() {
+        return email;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
+    }
+
+    public String getDate() {
+        return date;
+    }
+
+    public void setDate(String date) {
+        this.date = date;
+    }
+
+    public String getTimeSlot() {
+        return timeSlot;
+    }
+
+    public void setTimeSlot(String timeSlot) {
+        this.timeSlot = timeSlot;
+    }
+
+    public String getMobile() {
+        return mobile;
+    }
+
+    public void setMobile(String mobile) {
+        this.mobile = mobile;
+    }
+
+    public String getLocality() {
+        return locality;
+    }
+
+    public void setLocality(String locality) {
+        this.locality = locality;
     }
 
     public String getGender() {
@@ -70,60 +113,12 @@ public class RegisterDto
         this.noOfPerson = noOfPerson;
     }
 
-    public String getToken() {
-        return token;
-    }
-
-    public void setToken(String token) {
-        this.token = token;
-    }
-
-    public String getTimeSlot() {return timeSlot;}
-
-    public void setTimeSlot(String timeSlot) {this.timeSlot = timeSlot;}
-
-    public String getDate() {return date;}
-
-    public void setDate(String date) {this.date = date;}
-
-    public String getFullName() {
-        return fullName;
-    }
-
-    public void setFullName(String fullName) {
-        this.fullName = fullName;
-    }
-
-    public String getEmail() {
-        return email;
-    }
-
-    public void setEmail(String email) {
-        this.email = email;
-    }
-
-    public String getMobile() {
-        return mobile;
-    }
-
-    public void setMobile(String mobile) {
-        this.mobile = mobile;
-    }
-
-    public String getLocality() {
-        return locality;
-    }
-
-    public void setLocality(String locality) {
-        this.locality = locality;
-    }
-
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
 
-        RegisterDto that = (RegisterDto) o;
+        OtpRequest that = (OtpRequest) o;
 
         if (noOfPerson != that.noOfPerson) return false;
         if (campaignId != that.campaignId) return false;
@@ -133,7 +128,6 @@ public class RegisterDto
         if (timeSlot != null ? !timeSlot.equals(that.timeSlot) : that.timeSlot != null) return false;
         if (mobile != null ? !mobile.equals(that.mobile) : that.mobile != null) return false;
         if (locality != null ? !locality.equals(that.locality) : that.locality != null) return false;
-        if (token != null ? !token.equals(that.token) : that.token != null) return false;
         if (gender != null ? !gender.equals(that.gender) : that.gender != null) return false;
         if (remark != null ? !remark.equals(that.remark) : that.remark != null) return false;
         if (dob != null ? !dob.equals(that.dob) : that.dob != null) return false;
@@ -148,7 +142,6 @@ public class RegisterDto
         result = 31 * result + (timeSlot != null ? timeSlot.hashCode() : 0);
         result = 31 * result + (mobile != null ? mobile.hashCode() : 0);
         result = 31 * result + (locality != null ? locality.hashCode() : 0);
-        result = 31 * result + (token != null ? token.hashCode() : 0);
         result = 31 * result + (gender != null ? gender.hashCode() : 0);
         result = 31 * result + (remark != null ? remark.hashCode() : 0);
         result = 31 * result + (dob != null ? dob.hashCode() : 0);
@@ -160,14 +153,13 @@ public class RegisterDto
 
     @Override
     public String toString() {
-        return "RegisterDto{" +
+        return "OtpRequest{" +
                 "fullName='" + fullName + '\'' +
                 ", email='" + email + '\'' +
                 ", date='" + date + '\'' +
                 ", timeSlot='" + timeSlot + '\'' +
                 ", mobile='" + mobile + '\'' +
                 ", locality='" + locality + '\'' +
-                ", token='" + token + '\'' +
                 ", gender='" + gender + '\'' +
                 ", remark='" + remark + '\'' +
                 ", dob='" + dob + '\'' +

@@ -1,25 +1,43 @@
 package com.campaign.bo.request;
 
+import com.campaign.rest.request.campaign.HeaderDetails;
 import com.campaign.rest.request.campaign.SlotDetails;
 
 import java.util.List;
 
-public class CampaignCreateRequestBO {
-    private int  createdBy;
+public class CampaignUpdateRequestBO {
+    private int  id;
+    private int  headerId;
+    private int  isPublished;
     private int noOfPerson;
     private int isallowOnFull;
+    private List<String> dates;
+    private List<SlotDetails> slots;
     private String name;
-    private int headerId;
-    private int isPublished;
+    private String status;
     private String desc;
     private String confirmSms;
-    private String emailSubject;
     private String confirmEmail;
     private String notifyEmail;
     private String campaignOverText;
     private String slotFullText;
-    private List<SlotDetails> slots;
-    private List<String> dates;
+    private String emailSubject;
+
+    public int getHeaderId() {
+        return headerId;
+    }
+
+    public void setHeaderId(int headerId) {
+        this.headerId = headerId;
+    }
+
+    public String getStatus() {
+        return status;
+    }
+
+    public void setStatus(String status) {
+        this.status = status;
+    }
 
     public String getEmailSubject() {
         return emailSubject;
@@ -29,45 +47,37 @@ public class CampaignCreateRequestBO {
         this.emailSubject = emailSubject;
     }
 
-    public int getHeaderId() {
-      return headerId;
-   }
-
-   public void setHeaderId(int headerId) {
-      this.headerId = headerId;
-   }
-
-   public List<String> getDates() {
-      return dates;
-   }
+    public List<String> getDates() {
+        return dates;
+    }
 
     public void setDates(List<String> dates) {
         this.dates = dates;
     }
 
-    public int getCreatedBy() {
-        return createdBy;
+    public List<SlotDetails> getSlots() {
+        return slots;
     }
 
-    public void setCreatedBy(int createdBy) {
-        this.createdBy = createdBy;
+    public void setSlots(List<SlotDetails> slots) {
+        this.slots = slots;
+    }
+
+    public int getId() {
+        return id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
     }
 
     public int getNoOfPerson() {
         return noOfPerson;
     }
 
-   public int getIsPublished() {
-      return isPublished;
-   }
-
-   public void setIsPublished(int isPublished) {
-      this.isPublished = isPublished;
-   }
-
-   public void setNoOfPerson(int noOfPerson) {
-      this.noOfPerson = noOfPerson;
-   }
+    public void setNoOfPerson(int noOfPerson) {
+        this.noOfPerson = noOfPerson;
+    }
 
     public int getIsallowOnFull() {
         return isallowOnFull;
@@ -133,12 +143,12 @@ public class CampaignCreateRequestBO {
         this.slotFullText = slotFullText;
     }
 
-    public List<SlotDetails> getSlots() {
-        return slots;
+    public int getIsPublished() {
+        return isPublished;
     }
 
-    public void setSlots(List<SlotDetails> slots) {
-        this.slots = slots;
+    public void setIsPublished(int isPublished) {
+        this.isPublished = isPublished;
     }
 
     @Override
@@ -146,64 +156,67 @@ public class CampaignCreateRequestBO {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
 
-        CampaignCreateRequestBO that = (CampaignCreateRequestBO) o;
+        CampaignUpdateRequestBO that = (CampaignUpdateRequestBO) o;
 
-        if (createdBy != that.createdBy) return false;
-        if (noOfPerson != that.noOfPerson) return false;
-        if (isallowOnFull != that.isallowOnFull) return false;
+        if (id != that.id) return false;
         if (headerId != that.headerId) return false;
         if (isPublished != that.isPublished) return false;
+        if (noOfPerson != that.noOfPerson) return false;
+        if (isallowOnFull != that.isallowOnFull) return false;
+        if (dates != null ? !dates.equals(that.dates) : that.dates != null) return false;
+        if (slots != null ? !slots.equals(that.slots) : that.slots != null) return false;
         if (name != null ? !name.equals(that.name) : that.name != null) return false;
+        if (status != null ? !status.equals(that.status) : that.status != null) return false;
         if (desc != null ? !desc.equals(that.desc) : that.desc != null) return false;
         if (confirmSms != null ? !confirmSms.equals(that.confirmSms) : that.confirmSms != null) return false;
-        if (emailSubject != null ? !emailSubject.equals(that.emailSubject) : that.emailSubject != null) return false;
         if (confirmEmail != null ? !confirmEmail.equals(that.confirmEmail) : that.confirmEmail != null) return false;
         if (notifyEmail != null ? !notifyEmail.equals(that.notifyEmail) : that.notifyEmail != null) return false;
         if (campaignOverText != null ? !campaignOverText.equals(that.campaignOverText) : that.campaignOverText != null)
             return false;
         if (slotFullText != null ? !slotFullText.equals(that.slotFullText) : that.slotFullText != null) return false;
-        if (slots != null ? !slots.equals(that.slots) : that.slots != null) return false;
-        return dates != null ? dates.equals(that.dates) : that.dates == null;
+        return emailSubject != null ? emailSubject.equals(that.emailSubject) : that.emailSubject == null;
     }
 
     @Override
     public int hashCode() {
-        int result = createdBy;
-        result = 31 * result + noOfPerson;
-        result = 31 * result + isallowOnFull;
-        result = 31 * result + (name != null ? name.hashCode() : 0);
+        int result = id;
         result = 31 * result + headerId;
         result = 31 * result + isPublished;
+        result = 31 * result + noOfPerson;
+        result = 31 * result + isallowOnFull;
+        result = 31 * result + (dates != null ? dates.hashCode() : 0);
+        result = 31 * result + (slots != null ? slots.hashCode() : 0);
+        result = 31 * result + (name != null ? name.hashCode() : 0);
+        result = 31 * result + (status != null ? status.hashCode() : 0);
         result = 31 * result + (desc != null ? desc.hashCode() : 0);
         result = 31 * result + (confirmSms != null ? confirmSms.hashCode() : 0);
-        result = 31 * result + (emailSubject != null ? emailSubject.hashCode() : 0);
         result = 31 * result + (confirmEmail != null ? confirmEmail.hashCode() : 0);
         result = 31 * result + (notifyEmail != null ? notifyEmail.hashCode() : 0);
         result = 31 * result + (campaignOverText != null ? campaignOverText.hashCode() : 0);
         result = 31 * result + (slotFullText != null ? slotFullText.hashCode() : 0);
-        result = 31 * result + (slots != null ? slots.hashCode() : 0);
-        result = 31 * result + (dates != null ? dates.hashCode() : 0);
+        result = 31 * result + (emailSubject != null ? emailSubject.hashCode() : 0);
         return result;
     }
 
     @Override
     public String toString() {
-        return "CampaignCreateRequestBO{" +
-                "createdBy=" + createdBy +
-                ", noOfPerson=" + noOfPerson +
-                ", isallowOnFull=" + isallowOnFull +
-                ", name='" + name + '\'' +
+        return "CampaignUpdateRequestBO{" +
+                "id=" + id +
                 ", headerId=" + headerId +
                 ", isPublished=" + isPublished +
+                ", noOfPerson=" + noOfPerson +
+                ", isallowOnFull=" + isallowOnFull +
+                ", dates=" + dates +
+                ", slots=" + slots +
+                ", name='" + name + '\'' +
+                ", status='" + status + '\'' +
                 ", desc='" + desc + '\'' +
                 ", confirmSms='" + confirmSms + '\'' +
-                ", emailSubject='" + emailSubject + '\'' +
                 ", confirmEmail='" + confirmEmail + '\'' +
                 ", notifyEmail='" + notifyEmail + '\'' +
                 ", campaignOverText='" + campaignOverText + '\'' +
                 ", slotFullText='" + slotFullText + '\'' +
-                ", slots=" + slots +
-                ", dates=" + dates +
+                ", emailSubject='" + emailSubject + '\'' +
                 '}';
     }
 }

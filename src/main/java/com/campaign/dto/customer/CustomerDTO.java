@@ -6,6 +6,7 @@ import java.util.List;
 
 public class CustomerDTO {
     private String fullName;
+    private String campaignName;
     private String email;
     private String date;
     private String timeSlot;
@@ -18,8 +19,34 @@ public class CustomerDTO {
     private String resource;
     private int noOfPerson;
     private int id;
+    private int isConfirmed;
+    private int campaignId;
     private String isAvailable;
     private List<CouponResponse> availableSlots;
+
+    public int getIsConfirmed() {
+        return isConfirmed;
+    }
+
+    public void setIsConfirmed(int isConfirmed) {
+        this.isConfirmed = isConfirmed;
+    }
+
+    public String getCampaignName() {
+        return campaignName;
+    }
+
+    public void setCampaignName(String campaignName) {
+        this.campaignName = campaignName;
+    }
+
+    public int getCampaignId() {
+        return campaignId;
+    }
+
+    public void setCampaignId(int campaignId) {
+        this.campaignId = campaignId;
+    }
 
     public int getId() {
         return id;
@@ -150,7 +177,10 @@ public class CustomerDTO {
 
         if (noOfPerson != that.noOfPerson) return false;
         if (id != that.id) return false;
+        if (isConfirmed != that.isConfirmed) return false;
+        if (campaignId != that.campaignId) return false;
         if (fullName != null ? !fullName.equals(that.fullName) : that.fullName != null) return false;
+        if (campaignName != null ? !campaignName.equals(that.campaignName) : that.campaignName != null) return false;
         if (email != null ? !email.equals(that.email) : that.email != null) return false;
         if (date != null ? !date.equals(that.date) : that.date != null) return false;
         if (timeSlot != null ? !timeSlot.equals(that.timeSlot) : that.timeSlot != null) return false;
@@ -168,6 +198,7 @@ public class CustomerDTO {
     @Override
     public int hashCode() {
         int result = fullName != null ? fullName.hashCode() : 0;
+        result = 31 * result + (campaignName != null ? campaignName.hashCode() : 0);
         result = 31 * result + (email != null ? email.hashCode() : 0);
         result = 31 * result + (date != null ? date.hashCode() : 0);
         result = 31 * result + (timeSlot != null ? timeSlot.hashCode() : 0);
@@ -180,6 +211,8 @@ public class CustomerDTO {
         result = 31 * result + (resource != null ? resource.hashCode() : 0);
         result = 31 * result + noOfPerson;
         result = 31 * result + id;
+        result = 31 * result + isConfirmed;
+        result = 31 * result + campaignId;
         result = 31 * result + (isAvailable != null ? isAvailable.hashCode() : 0);
         result = 31 * result + (availableSlots != null ? availableSlots.hashCode() : 0);
         return result;
@@ -189,6 +222,7 @@ public class CustomerDTO {
     public String toString() {
         return "CustomerDTO{" +
                 "fullName='" + fullName + '\'' +
+                ", campaignName='" + campaignName + '\'' +
                 ", email='" + email + '\'' +
                 ", date='" + date + '\'' +
                 ", timeSlot='" + timeSlot + '\'' +
@@ -201,6 +235,8 @@ public class CustomerDTO {
                 ", resource='" + resource + '\'' +
                 ", noOfPerson=" + noOfPerson +
                 ", id=" + id +
+                ", isConfirmed=" + isConfirmed +
+                ", campaignId=" + campaignId +
                 ", isAvailable='" + isAvailable + '\'' +
                 ", availableSlots=" + availableSlots +
                 '}';

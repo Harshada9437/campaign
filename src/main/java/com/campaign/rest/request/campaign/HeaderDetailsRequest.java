@@ -1,9 +1,8 @@
 package com.campaign.rest.request.campaign;
 
-public class HeaderDetails {
-    private int id;
-    private int smsId;
-    private int smtpId;
+public class  HeaderDetailsRequest {
+    private SmsDetails smsDetails;
+    private SmtpDetails smtpDetails;
     private String name;
     private String info;
     private String logo;
@@ -13,28 +12,20 @@ public class HeaderDetails {
     private String border;
     private String domain;
 
-    public int getId() {
-        return id;
+    public SmsDetails getSmsDetails() {
+        return smsDetails;
     }
 
-    public void setId(int id) {
-        this.id = id;
+    public void setSmsDetails(SmsDetails smsDetails) {
+        this.smsDetails = smsDetails;
     }
 
-    public int getSmsId() {
-        return smsId;
+    public SmtpDetails getSmtpDetails() {
+        return smtpDetails;
     }
 
-    public void setSmsId(int smsId) {
-        this.smsId = smsId;
-    }
-
-    public int getSmtpId() {
-        return smtpId;
-    }
-
-    public void setSmtpId(int smtpId) {
-        this.smtpId = smtpId;
+    public void setSmtpDetails(SmtpDetails smtpDetails) {
+        this.smtpDetails = smtpDetails;
     }
 
     public String getName() {
@@ -106,11 +97,10 @@ public class HeaderDetails {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
 
-        HeaderDetails that = (HeaderDetails) o;
+        HeaderDetailsRequest that = (HeaderDetailsRequest) o;
 
-        if (id != that.id) return false;
-        if (smsId != that.smsId) return false;
-        if (smtpId != that.smtpId) return false;
+        if (smsDetails != null ? !smsDetails.equals(that.smsDetails) : that.smsDetails != null) return false;
+        if (smtpDetails != null ? !smtpDetails.equals(that.smtpDetails) : that.smtpDetails != null) return false;
         if (name != null ? !name.equals(that.name) : that.name != null) return false;
         if (info != null ? !info.equals(that.info) : that.info != null) return false;
         if (logo != null ? !logo.equals(that.logo) : that.logo != null) return false;
@@ -123,9 +113,8 @@ public class HeaderDetails {
 
     @Override
     public int hashCode() {
-        int result = id;
-        result = 31 * result + smsId;
-        result = 31 * result + smtpId;
+        int result = smsDetails != null ? smsDetails.hashCode() : 0;
+        result = 31 * result + (smtpDetails != null ? smtpDetails.hashCode() : 0);
         result = 31 * result + (name != null ? name.hashCode() : 0);
         result = 31 * result + (info != null ? info.hashCode() : 0);
         result = 31 * result + (logo != null ? logo.hashCode() : 0);
@@ -139,10 +128,9 @@ public class HeaderDetails {
 
     @Override
     public String toString() {
-        return "HeaderDetails{" +
-                "id=" + id +
-                ", smsId=" + smsId +
-                ", smtpId=" + smtpId +
+        return "HeaderDetailsRequest{" +
+                "smsDetails=" + smsDetails +
+                ", smtpDetails=" + smtpDetails +
                 ", name='" + name + '\'' +
                 ", info='" + info + '\'' +
                 ", logo='" + logo + '\'' +

@@ -2,7 +2,9 @@ package com.campaign.rest.response.customer;
 
 public class CustomerResponse {
     private int id;
+    private int campaignId;
     private String fullName;
+    private String campaignName;
     private String email;
     private String date;
     private String timeSlot;
@@ -13,6 +15,31 @@ public class CustomerResponse {
     private String dob;
     private String resource;
     private int noOfPerson;
+    private int isConfirmed;
+
+    public int getIsConfirmed() {
+        return isConfirmed;
+    }
+
+    public void setIsConfirmed(int isConfirmed) {
+        this.isConfirmed = isConfirmed;
+    }
+
+    public int getCampaignId() {
+        return campaignId;
+    }
+
+    public String getCampaignName() {
+        return campaignName;
+    }
+
+    public void setCampaignId(int campaignId) {
+        this.campaignId = campaignId;
+    }
+
+    public void setCampaignName(String campaignName) {
+        this.campaignName = campaignName;
+    }
 
     public String getFullName() {
         return fullName;
@@ -114,7 +141,9 @@ public class CustomerResponse {
     public String toString() {
         return "CustomerResponse{" +
                 "id=" + id +
+                ", campaignId=" + campaignId +
                 ", fullName='" + fullName + '\'' +
+                ", campaignName='" + campaignName + '\'' +
                 ", email='" + email + '\'' +
                 ", date='" + date + '\'' +
                 ", timeSlot='" + timeSlot + '\'' +
@@ -125,6 +154,7 @@ public class CustomerResponse {
                 ", dob='" + dob + '\'' +
                 ", resource='" + resource + '\'' +
                 ", noOfPerson=" + noOfPerson +
+                ", isConfirmed=" + isConfirmed +
                 '}';
     }
 }

@@ -10,13 +10,17 @@ import java.util.List;
 public class CampaignDTO {
     private int  id;
     private int  createdBy;
+    private int  isPublished;
     private int noOfPerson;
     private int isAllowOnFull;
     private int headerId;
+    private String status;
     private HeaderDetails header;
     private SmsDetails sms;
     private SmtpDetails smtp;
     private String name;
+    private String linkHashId;
+    private String emailSubject;
     private String hashId;
     private String desc;
     private String confirmSms;
@@ -26,6 +30,38 @@ public class CampaignDTO {
     private String slotFullText;
     private List<SlotDetails> slots;
     private List<String> dates;
+
+    public String getEmailSubject() {
+        return emailSubject;
+    }
+
+    public void setEmailSubject(String emailSubject) {
+        this.emailSubject = emailSubject;
+    }
+    public String getStatus() {
+        return status;
+    }
+
+    public void setStatus(String status) {
+        this.status = status;
+    }
+
+
+    public int getIsPublished() {
+        return isPublished;
+    }
+
+    public void setIsPublished(int isPublished) {
+        this.isPublished = isPublished;
+    }
+
+    public String getLinkHashId() {
+        return linkHashId;
+    }
+
+    public void setLinkHashId(String linkHashId) {
+        this.linkHashId = linkHashId;
+    }
 
     public int getCreatedBy() {
         return createdBy;
@@ -180,6 +216,7 @@ public class CampaignDTO {
 
         if (id != that.id) return false;
         if (createdBy != that.createdBy) return false;
+        if (isPublished != that.isPublished) return false;
         if (noOfPerson != that.noOfPerson) return false;
         if (isAllowOnFull != that.isAllowOnFull) return false;
         if (headerId != that.headerId) return false;
@@ -187,6 +224,8 @@ public class CampaignDTO {
         if (sms != null ? !sms.equals(that.sms) : that.sms != null) return false;
         if (smtp != null ? !smtp.equals(that.smtp) : that.smtp != null) return false;
         if (name != null ? !name.equals(that.name) : that.name != null) return false;
+        if (linkHashId != null ? !linkHashId.equals(that.linkHashId) : that.linkHashId != null) return false;
+        if (emailSubject != null ? !emailSubject.equals(that.emailSubject) : that.emailSubject != null) return false;
         if (hashId != null ? !hashId.equals(that.hashId) : that.hashId != null) return false;
         if (desc != null ? !desc.equals(that.desc) : that.desc != null) return false;
         if (confirmSms != null ? !confirmSms.equals(that.confirmSms) : that.confirmSms != null) return false;
@@ -194,6 +233,7 @@ public class CampaignDTO {
         if (notifyEmail != null ? !notifyEmail.equals(that.notifyEmail) : that.notifyEmail != null) return false;
         if (campaignOverText != null ? !campaignOverText.equals(that.campaignOverText) : that.campaignOverText != null)
             return false;
+        if (status != null ? !status.equals(that.status) : that.status != null) return false;
         if (slotFullText != null ? !slotFullText.equals(that.slotFullText) : that.slotFullText != null) return false;
         if (slots != null ? !slots.equals(that.slots) : that.slots != null) return false;
         return dates != null ? dates.equals(that.dates) : that.dates == null;
@@ -203,6 +243,8 @@ public class CampaignDTO {
     public int hashCode() {
         int result = id;
         result = 31 * result + createdBy;
+        result = 31 * result + isPublished;
+        result = 31 * result + (status != null ? status.hashCode() : 0);
         result = 31 * result + noOfPerson;
         result = 31 * result + isAllowOnFull;
         result = 31 * result + headerId;
@@ -210,6 +252,8 @@ public class CampaignDTO {
         result = 31 * result + (sms != null ? sms.hashCode() : 0);
         result = 31 * result + (smtp != null ? smtp.hashCode() : 0);
         result = 31 * result + (name != null ? name.hashCode() : 0);
+        result = 31 * result + (linkHashId != null ? linkHashId.hashCode() : 0);
+        result = 31 * result + (emailSubject != null ? emailSubject.hashCode() : 0);
         result = 31 * result + (hashId != null ? hashId.hashCode() : 0);
         result = 31 * result + (desc != null ? desc.hashCode() : 0);
         result = 31 * result + (confirmSms != null ? confirmSms.hashCode() : 0);
@@ -227,13 +271,17 @@ public class CampaignDTO {
         return "CampaignDTO{" +
                 "id=" + id +
                 ", createdBy=" + createdBy +
+                ", isPublished=" + isPublished +
                 ", noOfPerson=" + noOfPerson +
                 ", isAllowOnFull=" + isAllowOnFull +
                 ", headerId=" + headerId +
                 ", header=" + header +
                 ", sms=" + sms +
                 ", smtp=" + smtp +
+                ", status='" + status + '\'' +
                 ", name='" + name + '\'' +
+                ", linkHashId='" + linkHashId + '\'' +
+                ", emailSubject='" + emailSubject + '\'' +
                 ", hashId='" + hashId + '\'' +
                 ", desc='" + desc + '\'' +
                 ", confirmSms='" + confirmSms + '\'' +

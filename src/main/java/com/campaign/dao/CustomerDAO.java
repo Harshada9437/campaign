@@ -1,6 +1,8 @@
 package com.campaign.dao;
 
-import com.campaign.ConnectionPool;
+import com.campaign.Exception.CustomerNotFoundException;
+import com.campaign.bo.request.OtpRequestBO;
+import com.campaign.bo.request.RegisterBo;
 import com.campaign.dao.UtilClasses.ConnectionHandler;
 import com.campaign.dto.customer.CustomerDTO;
 import com.campaign.dto.customer.RegisterDto;
@@ -18,16 +20,16 @@ import java.util.UUID;
  */
 public class CustomerDAO {
 
-    public Boolean updateSlot(UpdateSlotDTO updateSlotDTO) throws SQLException {
+    public Boolean updateSlot(UpdateSlotDTO updateSlotDTO, int id, int noOfPerson) throws SQLException {
         boolean isCreated = false;
         PreparedStatement preparedStatement = null;
         Connection connection = null;
         try {
             int parameterIndex = 1;
-            connection = new ConnectionPool().getConnection();
+            connection = new ConnectionHandler().getConnection();
             connection.setAutoCommit(false);
             preparedStatement = connection
-                    .prepareStatement("UPDATE customer_details SET date =? , time_slot =? WHERE id =?");
+                    .prepareStatement("UPDATE customer_details SET isConfirmed=1 , date =? , time_slot =? WHERE id =?");
 
             preparedStatement.setString(parameterIndex++, updateSlotDTO.getDate());
             preparedStatement.setString(parameterIndex++, updateSlotDTO.getTime());
@@ -36,7 +38,7 @@ public class CustomerDAO {
             int i = preparedStatement.executeUpdate();
             if (i > 0) {
                 connection.commit();
-                updateCount(updateSlotDTO.getTime(),updateSlotDTO.getDate());
+                updateCount(noOfPerson, updateSlotDTO.getTime(), updateSlotDTO.getDate(), id);
                 isCreated = Boolean.TRUE;
             } else {
                 connection.rollback();
@@ -54,16 +56,17 @@ public class CustomerDAO {
         }
         return isCreated;
     }
-    public static Boolean getValidationForEmail(String email) throws SQLException {
+
+    public static Boolean getValidationForEmail(String email, int id) throws SQLException {
         Connection connection = null;
         Statement statement = null;
         Boolean isProcessed = Boolean.FALSE;
         try {
-            connection = new ConnectionPool().getConnection();
+            connection = new ConnectionHandler().getConnection();
             statement = connection.createStatement();
             StringBuilder query = new StringBuilder(
                     "SELECT email FROM customer_details where email = \"")
-                    .append(email).append("\"");
+                    .append(email).append("\" and isConfirmed=1 and campaign_master_id=" + id);
             ResultSet resultSet = statement.executeQuery(query.toString());
 
             while (resultSet.next()) {
@@ -85,17 +88,17 @@ public class CustomerDAO {
         return isProcessed;
     }
 
-    public static Boolean getValidationForPhoneNumber(String mobile) throws SQLException {
+    public static Boolean getValidationForPhoneNumber(String mobile, int id) throws SQLException {
         Connection connection = null;
         Statement statement = null;
         Boolean isProcessed = Boolean.FALSE;
         try {
 
-            connection = new ConnectionPool().getConnection();
+            connection = new ConnectionHandler().getConnection();
             statement = connection.createStatement();
             StringBuilder query = new StringBuilder(
                     "SELECT mobile FROM customer_details where mobile = \"")
-                    .append(mobile).append("\"");
+                    .append(mobile).append("\" and isConfirmed=1 and campaign_master_id=" + id);
             ResultSet resultSet = statement.executeQuery(query.toString());
 
             while (resultSet.next()) {
@@ -116,10 +119,10 @@ public class CustomerDAO {
     }
 
 
-    public Integer insertUser(RegisterDto appUserDTO) throws Exception {
+    public synchronized Integer insertUser(RegisterDto registerDto) throws Exception {
         PreparedStatement preparedStatement = null;
         Connection connection = null;
-        StringBuilder query = new StringBuilder("INSERT INTO customer_details(name,date,time_slot,resource,no_of_person,remark,gender,dob,locality,email,mobile) values (?,?,?,?,?,?,?,?,?,?,?)");
+        StringBuilder query = new StringBuilder("INSERT INTO customer_details(campaign_master_id,name,date,time_slot,resource,no_of_person,remark,gender,dob,locality,email,mobile) values (?,?,?,?,?,?,?,?,?,?,?,?)");
         Integer id = 0;
         try {
             int parameterIndex = 1;
@@ -127,28 +130,18 @@ public class CustomerDAO {
             connection.setAutoCommit(false);
             preparedStatement = connection
                     .prepareStatement(query.toString());
-            preparedStatement.setString(parameterIndex++,
-                    appUserDTO.getFullName());
-            preparedStatement.setString(parameterIndex++,
-                    appUserDTO.getDate());
-            preparedStatement.setString(parameterIndex++,
-                    appUserDTO.getTimeSlot());
-            preparedStatement.setString(parameterIndex++,
-                    appUserDTO.getResource());
-            preparedStatement.setInt(parameterIndex++,
-                    appUserDTO.getNoOfPerson());
-            preparedStatement.setString(parameterIndex++,
-                    appUserDTO.getRemark());
-            preparedStatement.setString(parameterIndex++,
-                    appUserDTO.getGender());
-            preparedStatement.setString(parameterIndex++,
-                    appUserDTO.getDob());
-            preparedStatement.setString(parameterIndex++,
-                    appUserDTO.getLocality());
-            preparedStatement.setString(parameterIndex++,
-                    appUserDTO.getEmail());
-            preparedStatement.setString(parameterIndex++,
-                    appUserDTO.getMobile());
+            preparedStatement.setInt(parameterIndex++, registerDto.getCampaignId());
+            preparedStatement.setString(parameterIndex++, registerDto.getFullName());
+            preparedStatement.setString(parameterIndex++, registerDto.getDate());
+            preparedStatement.setString(parameterIndex++, registerDto.getTimeSlot());
+            preparedStatement.setString(parameterIndex++, registerDto.getResource());
+            preparedStatement.setInt(parameterIndex++, registerDto.getNoOfPerson());
+            preparedStatement.setString(parameterIndex++, registerDto.getRemark());
+            preparedStatement.setString(parameterIndex++, registerDto.getGender());
+            preparedStatement.setString(parameterIndex++, registerDto.getDob());
+            preparedStatement.setString(parameterIndex++, registerDto.getLocality());
+            preparedStatement.setString(parameterIndex++, registerDto.getEmail());
+            preparedStatement.setString(parameterIndex++, registerDto.getMobile());
 
             int i = preparedStatement.executeUpdate();
             if (i > 0) {
@@ -186,7 +179,7 @@ public class CustomerDAO {
 
     }
 
-    public CustomerDTO getCustomerById(int userId) throws SQLException {
+    public CustomerDTO getCustomerById(int userId) throws SQLException, CustomerNotFoundException {
         Connection connection = null;
         Statement statement = null;
         CustomerDTO customerDTO = new CustomerDTO();
@@ -197,6 +190,7 @@ public class CustomerDAO {
                     "SELECT * FROM customer_details where id = ")
                     .append(userId);
             ResultSet resultSet = statement.executeQuery(query.toString());
+            int i = 0;
             while (resultSet.next()) {
                 customerDTO.setId(resultSet.getInt("id"));
                 customerDTO.setDate(resultSet.getString("date"));
@@ -210,6 +204,10 @@ public class CustomerDAO {
                 customerDTO.setResource(resultSet.getString("resource"));
                 customerDTO.setLocality(resultSet.getString("locality"));
                 customerDTO.setNoOfPerson(resultSet.getInt("no_of_person"));
+                i++;
+            }
+            if (i == 0) {
+                throw new CustomerNotFoundException("Invalid customer id.");
             }
         } catch (SQLException sqlException) {
             sqlException.printStackTrace();
@@ -225,18 +223,25 @@ public class CustomerDAO {
         return customerDTO;
     }
 
-    public List<CustomerDTO> getCustomerList( ) throws SQLException {
+    public List<CustomerDTO> getCustomerList(int campaignId) throws SQLException {
         Connection connection = null;
         Statement statement = null;
         List<CustomerDTO> customers = new ArrayList<CustomerDTO>();
         try {
             connection = new ConnectionHandler().getConnection();
             statement = connection.createStatement();
-            StringBuilder query = new StringBuilder("SELECT * FROM customer_details");
+            StringBuilder query = new StringBuilder("SELECT c.*,m.id as campaign_id,m.name as campaign_name FROM customer_details c \n" +
+                    "left join campaign_master m \n" +
+                    "on m.id=c.campaign_master_id \n" +
+                    "where c.campaign_master_id=" + campaignId);
             ResultSet resultSet = statement.executeQuery(query.toString());
+
             while (resultSet.next()) {
                 CustomerDTO customerDTO = new CustomerDTO();
                 customerDTO.setId(resultSet.getInt("id"));
+                customerDTO.setIsConfirmed(resultSet.getInt("isConfirmed"));
+                customerDTO.setCampaignId(resultSet.getInt("campaign_id"));
+                customerDTO.setCampaignName(resultSet.getString("campaign_name"));
                 customerDTO.setDate(resultSet.getString("date"));
                 customerDTO.setGender(resultSet.getString("gender"));
                 customerDTO.setTimeSlot(resultSet.getString("time_slot"));
@@ -368,16 +373,16 @@ public class CustomerDAO {
     public static String getToken(String mobile) throws SQLException {
         Connection connection = null;
         Statement statement = null;
-        String token="";
+        String token = "";
         try {
             connection = new ConnectionHandler().getConnection();
             connection.setAutoCommit(false);
             statement = connection.createStatement();
             StringBuilder query = new StringBuilder(
-                    "SELECT token FROM user_otp where mobile='" + mobile + "'" );
+                    "SELECT token FROM user_otp where mobile='" + mobile + "' and id=(select max(id) from  user_otp where mobile='"+mobile+"')");
             ResultSet resultSet = statement.executeQuery(query.toString());
             while (resultSet.next()) {
-               token=resultSet.getString("token");
+                token = resultSet.getString("token");
             }
         } catch (SQLException e) {
             e.printStackTrace();
@@ -396,16 +401,16 @@ public class CustomerDAO {
     public String getOtp(String mob) throws SQLException {
         Connection connection = null;
         Statement statement = null;
-        String token="";
+        String token = "";
         try {
             connection = new ConnectionHandler().getConnection();
             connection.setAutoCommit(false);
             statement = connection.createStatement();
             StringBuilder query = new StringBuilder(
-                    "SELECT otp FROM user_otp where mobile='" + mob + "' and isExpired='NO'" );
+                    "SELECT otp FROM user_otp where mobile='" + mob + "' and isExpired='NO'");
             ResultSet resultSet = statement.executeQuery(query.toString());
             while (resultSet.next()) {
-                token=resultSet.getString("otp");
+                token = resultSet.getString("otp");
             }
         } catch (SQLException e) {
             e.printStackTrace();
@@ -421,19 +426,18 @@ public class CustomerDAO {
         return token;
     }
 
-    public int getConut(String time, String date) throws SQLException {
+    public int getConut(String time, String date, int campaignId) throws SQLException {
         Connection connection = null;
         Statement statement = null;
-        int count=0;
+        int count = 0;
         try {
             connection = new ConnectionHandler().getConnection();
             connection.setAutoCommit(false);
             statement = connection.createStatement();
-            StringBuilder query = new StringBuilder(
-                    "SELECT count from coupon_availability where date='" + date + "' and time_slot='"+time+"'" );
+            StringBuilder query = new StringBuilder("SELECT capacity from slots where date='" + date + "' and time_slot='" + time + "' and campaign_master_id=" + campaignId);
             ResultSet resultSet = statement.executeQuery(query.toString());
-            while (resultSet.next()){
-                count=resultSet.getInt("count");
+            while (resultSet.next()) {
+                count = resultSet.getInt("capacity");
             }
         } catch (SQLException e) {
             e.printStackTrace();
@@ -449,7 +453,7 @@ public class CustomerDAO {
         return count;
     }
 
-    public List<CouponResponse> getSlots(int id) throws SQLException {
+    public List<CouponResponse> getSlots(int id,String date) throws SQLException {
         Connection connection = null;
         Statement statement = null;
         List<CouponResponse> responses = new ArrayList<CouponResponse>();
@@ -457,16 +461,14 @@ public class CustomerDAO {
             connection = new ConnectionHandler().getConnection();
             connection.setAutoCommit(false);
             statement = connection.createStatement();
-            StringBuilder query = new StringBuilder(
-                    "SELECT capacity,date,time_slot FROM slots where campaign_id="+id );
+            StringBuilder query = new StringBuilder("select capacity,date,time_slot from slots where campaign_master_id=" + id + " and capacity>0 and date>='"+date+"' order by date");
             ResultSet resultSet = statement.executeQuery(query.toString());
             while (resultSet.next()) {
                 CouponResponse couponCountDTO = new CouponResponse();
                 couponCountDTO.setDate(resultSet.getString("date"));
                 couponCountDTO.setTime(resultSet.getString("time_slot"));
-                if(resultSet.getInt("capacity")>0){
-                    couponCountDTO.setIsAvailable(1);
-                }
+                couponCountDTO.setCapacity(resultSet.getInt("capacity"));
+                couponCountDTO.setIsAvailable(1);
                 responses.add(couponCountDTO);
             }
         } catch (SQLException e) {
@@ -483,19 +485,20 @@ public class CustomerDAO {
         return responses;
     }
 
-    public void updateCount(String timeSlot, String date) throws SQLException{
+    public void updateCount(int noOfPerson, String timeSlot, String date, int id) throws SQLException {
         PreparedStatement preparedStatement = null;
         Connection connection = null;
         try {
             int parameterIndex = 1;
-            connection = new ConnectionPool().getConnection();
+            connection = new ConnectionHandler().getConnection();
             connection.setAutoCommit(false);
             preparedStatement = connection
-                    .prepareStatement("UPDATE coupon_availability SET count =?  WHERE date =? and time_slot =?");
+                    .prepareStatement("UPDATE slots SET capacity =?  WHERE date =? and time_slot =? and campaign_master_id=?");
 
-            preparedStatement.setInt(parameterIndex++, getConut(timeSlot,date)-1);
+            preparedStatement.setInt(parameterIndex++, getConut(timeSlot, date, id) - noOfPerson);
             preparedStatement.setString(parameterIndex++, date);
             preparedStatement.setString(parameterIndex++, timeSlot);
+            preparedStatement.setInt(parameterIndex++, id);
 
             int i = preparedStatement.executeUpdate();
             if (i > 0) {
@@ -514,5 +517,66 @@ public class CustomerDAO {
                 e.printStackTrace();
             }
         }
+    }
+
+    public Boolean confirmRegistration(int customerId) throws SQLException {
+        PreparedStatement preparedStatement = null;
+        Boolean isProcessed = Boolean.FALSE;
+        Connection connection = null;
+        try {
+            int parameterIndex = 1;
+            connection = new ConnectionHandler().getConnection();
+            connection.setAutoCommit(false);
+            preparedStatement = connection
+                    .prepareStatement("UPDATE customer_details SET isConfirmed = 1  WHERE id=?");
+
+            preparedStatement.setInt(parameterIndex++, customerId);
+
+            int i = preparedStatement.executeUpdate();
+            if (i > 0) {
+                connection.commit();
+                isProcessed = Boolean.TRUE;
+            } else {
+                connection.rollback();
+            }
+        } catch (SQLException sqlException) {
+            sqlException.printStackTrace();
+            throw sqlException;
+        } finally {
+            try {
+                connection.close();
+                preparedStatement.close();
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+        }
+        return isProcessed;
+    }
+
+    public int getCustomerId(String mobile, int campaignId) throws SQLException{
+        Connection connection = null;
+        Statement statement = null;
+        int id=0;
+        try {
+            connection = new ConnectionHandler().getConnection();
+            connection.setAutoCommit(false);
+            statement = connection.createStatement();
+            StringBuilder query = new StringBuilder("select id from customer_details where campaign_master_id=" + campaignId + " and mobile='"+mobile+"'");
+            ResultSet resultSet = statement.executeQuery(query.toString());
+            while (resultSet.next()) {
+                id=resultSet.getInt("id");
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+            throw e;
+        } finally {
+            try {
+                statement.close();
+                connection.close();
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+        }
+        return id;
     }
 }
