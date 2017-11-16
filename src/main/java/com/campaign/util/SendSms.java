@@ -31,7 +31,7 @@ public class SendSms {
     //Prepare parameter string
     private final StringBuilder sbPostData = new StringBuilder(mainUrl);
 
-    public Boolean sendSMS(String mobiles, String message, SmsDetails smsDetails) throws SQLException {
+    public Boolean sendSMS(String mobiles, String message, SmsDetails smsDetails) {
         if (mobiles == null || mobiles.equals("")) {
             return false;
         }
@@ -70,12 +70,12 @@ public class SendSms {
         return isProcessed;
     }
 
-    public Boolean NewUserSignup(String mobiles, int otp, SmsDetails smsDetails) throws SQLException {
+    public Boolean NewUserSignup(String mobiles, int otp, SmsDetails smsDetails) {
         String message = "Your verification code is "+otp+". Enter the code to get registered for a complimentary meal.";
         return sendSMS(mobiles, message, smsDetails);
     }
 
-    public Boolean newRegistration(String name,String date,String time,String mobile,int persons, SmsDetails smsDetails,String msg,String isPublished) throws SQLException {
+    public Boolean newRegistration(String name,String date,String time,String mobile,int persons, SmsDetails smsDetails,String msg,String isPublished) {
         String person,details;
         if(persons-1>0){
            person="+"+ (persons-1);

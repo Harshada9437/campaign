@@ -72,9 +72,7 @@ public class CustomerRequestHandler {
             isProcessed = customerDAO.confirmRegistration(registerBo.getCustomerId());
             if (isProcessed) {
                 customerDAO.updateCount(customerDTO.getNoOfPerson(), customerDTO.getTimeSlot(), customerDTO.getDate(), registerBo.getCampaignId());
-                SendSms sendSms = new SendSms();
-                sendSms.newRegistration(customerDTO.getFullName(), customerDTO.getDate(), customerDTO.getTimeSlot(), customerDTO.getMobile(), customerDTO.getNoOfPerson(), campaignDTO.getSms(), campaignDTO.getConfirmSms(), "");
-                EmailService.newRegistration(campaignDTO.getEmailSubject(), campaignDTO.getConfirmEmail(), customerDTO.getEmail(), customerDTO.getFullName(), customerDTO.getDate(), customerDTO.getTimeSlot(), customerDTO.getNoOfPerson(), campaignDTO.getSmtp(), "");
+                sendConfirmation(customerDTO,campaignDTO);
             }
         } else {
             isProcessed = Boolean.TRUE;
@@ -86,7 +84,13 @@ public class CustomerRequestHandler {
         return isProcessed;
     }
 
-    private GetCustomerResponse buildResponseFromDto(CustomerDTO customerDTO) throws SQLException {
+    public void sendConfirmation(CustomerDTO customerDTO,CampaignDTO campaignDTO) {
+        SendSms sendSms = new SendSms();
+        sendSms.newRegistration(customerDTO.getFullName(), customerDTO.getDate(), customerDTO.getTimeSlot(), customerDTO.getMobile(), customerDTO.getNoOfPerson(), campaignDTO.getSms(), campaignDTO.getConfirmSms(), "");
+        EmailService.newRegistration(campaignDTO.getEmailSubject(), campaignDTO.getConfirmEmail(), customerDTO.getEmail(), customerDTO.getFullName(), customerDTO.getDate(), customerDTO.getTimeSlot(), customerDTO.getNoOfPerson(), campaignDTO.getSmtp(), "");
+    }
+
+    public GetCustomerResponse buildResponseFromDto(CustomerDTO customerDTO) throws SQLException {
         GetCustomerResponse customerResponse = new GetCustomerResponse();
         customerResponse.setId(customerDTO.getId());
         customerResponse.setFullName(customerDTO.getFullName());
@@ -131,9 +135,7 @@ public class CustomerRequestHandler {
         isProcessed = customerDAO.updateSlot(buildAppUserDTOFromBO(updateSlotRequestBO), updateSlotRequestBO.getCampaignId(), customerDTO.getNoOfPerson());
 
         if (isProcessed) {
-            SendSms sendSms = new SendSms();
-            sendSms.newRegistration(customerDTO.getFullName(), customerDTO.getDate(), customerDTO.getTimeSlot(), customerDTO.getMobile(), customerDTO.getNoOfPerson(), campaignDTO.getSms(), campaignDTO.getConfirmSms(), "");
-            EmailService.newRegistration(campaignDTO.getEmailSubject(), campaignDTO.getConfirmEmail(), customerDTO.getEmail(), customerDTO.getFullName(), customerDTO.getDate(), customerDTO.getTimeSlot(), customerDTO.getNoOfPerson(), campaignDTO.getSmtp(), "");
+        sendConfirmation(customerDTO,campaignDTO);
         }
 
         return isProcessed;
@@ -263,16 +265,10 @@ public class CustomerRequestHandler {
                     times = new ArrayList<Slots>();
                     dateResponse = new DateResponse();
                     dateResponse.setDate(DateUtil.format(DateUtil.getTimeStampFromString(coupon.getDate()), "dd-MMM-yyyy"));
-                    Slots slots1 = new Slots();
-                    slots1.setTime(coupon.getTime());
-                    slots1.setCapacity(coupon.getCapacity());
-                    times.add(slots1);
+                    times=addSlots(coupon,times);
                     dates.add(coupon.getDate());
                 } else {
-                    Slots slots1 = new Slots();
-                    slots1.setTime(coupon.getTime());
-                    slots1.setCapacity(coupon.getCapacity());
-                    times.add(slots1);
+                   times=addSlots(coupon,times);
                 }
                 i++;
             }
@@ -284,5 +280,13 @@ public class CustomerRequestHandler {
             slots = new ArrayList<DateResponse>();
         }
         return slots;
+    }
+
+    private List<Slots> addSlots(CouponResponse coupon, List<Slots> times) {
+        Slots slots1 = new Slots();
+        slots1.setTime(coupon.getTime());
+        slots1.setCapacity(coupon.getCapacity());
+        times.add(slots1);
+        return times;
     }
 }

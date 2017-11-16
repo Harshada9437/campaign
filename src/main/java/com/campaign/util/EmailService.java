@@ -10,7 +10,7 @@ import java.util.Properties;
 
 public class EmailService {
 
-    public static Boolean newRegistration(String sub, String body, String to, String name, String date, String time, int persons, final SmtpDetails smtpDetails, String s) throws SQLException {
+    public static Boolean newRegistration(String sub, String body, String to, String name, String date, String time, int persons, final SmtpDetails smtpDetails, String s) {
         Boolean isProcessed = Boolean.FALSE;
 
         // Get system properties
