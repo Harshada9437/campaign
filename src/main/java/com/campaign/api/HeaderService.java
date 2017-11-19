@@ -11,6 +11,7 @@ import com.campaign.rest.response.header.HeaderListResponse;
 import com.campaign.rest.response.header.HeaderResponse;
 import com.campaign.rest.response.util.MessageResponse;
 import com.campaign.rest.response.util.ResponseGenerator;
+import com.campaign.util.UserRequestValidation;
 
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
@@ -22,16 +23,20 @@ public class HeaderService {
     @Path("/list")
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
-    public Response getHeaderList() throws Exception {
-        HeaderRequestHandler headerRequestHandler = new HeaderRequestHandler();
-        HeaderListResponse headerListResponse = new HeaderListResponse();
-        MessageResponse messageResponse = new MessageResponse();
+    public Response getHeaderList(@HeaderParam("Auth") String auth) {
         try {
-            headerListResponse.setHeaders(headerRequestHandler.getHeaders());
-            return ResponseGenerator.generateSuccessResponse(headerListResponse, "List of  headers.");
-        } catch (Exception e) {
-            e.printStackTrace();
-            return ResponseGenerator.generateFailureResponse(messageResponse, "Failed to retrieve.");
+            if (auth != null && UserRequestValidation.isRequestValid(auth)) {
+                HeaderRequestHandler headerRequestHandler = new HeaderRequestHandler();
+                HeaderListResponse headerListResponse = new HeaderListResponse();
+                headerListResponse.setHeaders(headerRequestHandler.getHeaders());
+                return ResponseGenerator.generateSuccessResponse(headerListResponse, "List of  headers.");
+            } else {
+                return ResponseGenerator.generateResponse(UserRequestValidation.getUnautheticatedResponse());
+            }
+        } catch (Exception e1) {
+            e1.printStackTrace();
+            MessageResponse messageResponse = new MessageResponse();
+            return ResponseGenerator.generateFailureResponse(messageResponse, "something went wrong while processing.");
         }
     }
 
@@ -39,16 +44,19 @@ public class HeaderService {
     @Path("/info/{id}")
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
-    public Response getHeaderInfo(@PathParam("id") int id) {
-        HeaderRequestHandler headerRequestHandler = new HeaderRequestHandler();
-        GetHeaderResponse headerListResponse;
-        MessageResponse messageResponse = new MessageResponse();
+    public Response getHeaderInfo(@PathParam("id") int id, @HeaderParam("Auth") String auth) {
         try {
-            headerListResponse = headerRequestHandler.getHeaderInfo(id);
-            return ResponseGenerator.generateSuccessResponse(headerListResponse, "Details of  headers.");
-        } catch (Exception e) {
-            e.printStackTrace();
-            return ResponseGenerator.generateFailureResponse(messageResponse, "Failed to retrieve.");
+            if (auth != null && UserRequestValidation.isRequestValid(auth)) {
+                HeaderRequestHandler headerRequestHandler = new HeaderRequestHandler();
+                GetHeaderResponse headerListResponse = headerRequestHandler.getHeaderInfo(id);
+                return ResponseGenerator.generateSuccessResponse(headerListResponse, "Details of  headers.");
+            } else {
+                return ResponseGenerator.generateResponse(UserRequestValidation.getUnautheticatedResponse());
+            }
+        } catch (Exception e1) {
+            e1.printStackTrace();
+            MessageResponse messageResponse = new MessageResponse();
+            return ResponseGenerator.generateFailureResponse(messageResponse, "something went wrong while processing.");
         }
     }
 
@@ -56,28 +64,33 @@ public class HeaderService {
     @Path("/create")
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
-    public Response createHeader(HeaderDetailsRequest headerDetails) throws Exception {
-        HeaderDetailsBO headerDetailsBO = new HeaderDetailsBO();
-        HeaderRequestHandler headerRequestHandler = new HeaderRequestHandler();
-        MessageResponse messageResponse = new MessageResponse();
-
-        headerDetailsBO.setBackground(headerDetails.getBackground());
-        headerDetailsBO.setLogo(headerDetails.getLogo());
-        headerDetailsBO.setIcon(headerDetails.getIcon());
-        headerDetailsBO.setDomain(headerDetails.getDomain());
-        headerDetailsBO.setBorder(headerDetails.getBorder());
-        headerDetailsBO.setForecolor(headerDetails.getForecolor());
-        headerDetailsBO.setInfo(headerDetails.getInfo());
-        headerDetailsBO.setName(headerDetails.getName());
-        headerDetailsBO.setSmsDetails(headerDetails.getSmsDetails());
-        headerDetailsBO.setSmtpDetails(headerDetails.getSmtpDetails());
-
+    public Response createHeader(HeaderDetailsRequest headerDetails, @HeaderParam("Auth") String auth) {
         try {
-            int id = headerRequestHandler.createHeader(headerDetailsBO);
-            return ResponseGenerator.generateSuccessResponse(messageResponse, String.valueOf(id));
-        } catch (Exception e) {
-            e.printStackTrace();
-            return ResponseGenerator.generateFailureResponse(messageResponse, "Failed to create.");
+            if (auth != null && UserRequestValidation.isRequestValid(auth)) {
+                HeaderDetailsBO headerDetailsBO = new HeaderDetailsBO();
+                HeaderRequestHandler headerRequestHandler = new HeaderRequestHandler();
+                MessageResponse messageResponse = new MessageResponse();
+
+                headerDetailsBO.setBackground(headerDetails.getBackground());
+                headerDetailsBO.setLogo(headerDetails.getLogo());
+                headerDetailsBO.setIcon(headerDetails.getIcon());
+                headerDetailsBO.setDomain(headerDetails.getDomain());
+                headerDetailsBO.setBorder(headerDetails.getBorder());
+                headerDetailsBO.setForecolor(headerDetails.getForecolor());
+                headerDetailsBO.setInfo(headerDetails.getInfo());
+                headerDetailsBO.setName(headerDetails.getName());
+                headerDetailsBO.setSmsDetails(headerDetails.getSmsDetails());
+                headerDetailsBO.setSmtpDetails(headerDetails.getSmtpDetails());
+
+                int id = headerRequestHandler.createHeader(headerDetailsBO);
+                return ResponseGenerator.generateSuccessResponse(messageResponse, String.valueOf(id));
+            } else {
+                return ResponseGenerator.generateResponse(UserRequestValidation.getUnautheticatedResponse());
+            }
+        } catch (Exception e1) {
+            e1.printStackTrace();
+            MessageResponse messageResponse = new MessageResponse();
+            return ResponseGenerator.generateFailureResponse(messageResponse, "something went wrong while processing.");
         }
     }
 
@@ -85,30 +98,34 @@ public class HeaderService {
     @Path("/update")
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
-    public Response updateHeader(HeaderUpdateRequest headerUpdateRequest) throws Exception {
-        HeaderUpdateRequestBO requestBO = new HeaderUpdateRequestBO();
-        HeaderRequestHandler headerRequestHandler = new HeaderRequestHandler();
-        MessageResponse messageResponse = new MessageResponse();
-
-        requestBO.setId(headerUpdateRequest.getId());
-        requestBO.setBackground(headerUpdateRequest.getBackground());
-        requestBO.setLogo(headerUpdateRequest.getLogo());
-        requestBO.setIcon(headerUpdateRequest.getIcon());
-        requestBO.setDomain(headerUpdateRequest.getDomain());
-        requestBO.setBorder(headerUpdateRequest.getBorder());
-        requestBO.setForecolor(headerUpdateRequest.getForecolor());
-        requestBO.setInfo(headerUpdateRequest.getInfo());
-        requestBO.setName(headerUpdateRequest.getName());
-        requestBO.setSmsDetails(headerUpdateRequest.getSmsDetails());
-        requestBO.setSmtpDetails(headerUpdateRequest.getSmtpDetails());
-
-
+    public Response updateHeader(HeaderUpdateRequest headerUpdateRequest, @HeaderParam("Auth") String auth) {
         try {
-            headerRequestHandler.updateHeader(requestBO);
-            return ResponseGenerator.generateSuccessResponse(messageResponse, "Header updated successfully.");
-        } catch (Exception e) {
-            e.printStackTrace();
-            return ResponseGenerator.generateFailureResponse(messageResponse, "Failed to create.");
+            if (auth != null && UserRequestValidation.isRequestValid(auth)) {
+                HeaderUpdateRequestBO requestBO = new HeaderUpdateRequestBO();
+                HeaderRequestHandler headerRequestHandler = new HeaderRequestHandler();
+                MessageResponse messageResponse = new MessageResponse();
+
+                requestBO.setId(headerUpdateRequest.getId());
+                requestBO.setBackground(headerUpdateRequest.getBackground());
+                requestBO.setLogo(headerUpdateRequest.getLogo());
+                requestBO.setIcon(headerUpdateRequest.getIcon());
+                requestBO.setDomain(headerUpdateRequest.getDomain());
+                requestBO.setBorder(headerUpdateRequest.getBorder());
+                requestBO.setForecolor(headerUpdateRequest.getForecolor());
+                requestBO.setInfo(headerUpdateRequest.getInfo());
+                requestBO.setName(headerUpdateRequest.getName());
+                requestBO.setSmsDetails(headerUpdateRequest.getSmsDetails());
+                requestBO.setSmtpDetails(headerUpdateRequest.getSmtpDetails());
+
+                headerRequestHandler.updateHeader(requestBO);
+                return ResponseGenerator.generateSuccessResponse(messageResponse, "Header updated successfully.");
+            } else {
+                return ResponseGenerator.generateResponse(UserRequestValidation.getUnautheticatedResponse());
+            }
+        } catch (Exception e1) {
+            e1.printStackTrace();
+            MessageResponse messageResponse = new MessageResponse();
+            return ResponseGenerator.generateFailureResponse(messageResponse, "something went wrong while processing.");
         }
     }
 }

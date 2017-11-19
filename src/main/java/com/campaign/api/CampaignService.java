@@ -13,6 +13,7 @@ import com.campaign.rest.response.campaign.CampaignListResponse;
 import com.campaign.rest.response.campaign.GetCampaignResponse;
 import com.campaign.rest.response.util.MessageResponse;
 import com.campaign.rest.response.util.ResponseGenerator;
+import com.campaign.util.UserRequestValidation;
 
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
@@ -25,34 +26,39 @@ public class CampaignService {
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
     @Path("/create")
-    public Response createCampaign(CampaignCreateRequest campaignCreateRequest) throws Exception {
-        CampaignCreateRequestBO campaignCreateRequestBO = new CampaignCreateRequestBO();
-
-        campaignCreateRequestBO.setName(campaignCreateRequest.getName());
-        campaignCreateRequestBO.setDesc(campaignCreateRequest.getDesc());
-        campaignCreateRequestBO.setDates(campaignCreateRequest.getDates());
-        campaignCreateRequestBO.setNoOfPerson(campaignCreateRequest.getNoOfPerson());
-        campaignCreateRequestBO.setSlots(campaignCreateRequest.getSlots());
-        campaignCreateRequestBO.setCampaignOverText(campaignCreateRequest.getCampaignOverText());
-        campaignCreateRequestBO.setConfirmEmail(campaignCreateRequest.getConfirmEmail());
-        campaignCreateRequestBO.setConfirmSms(campaignCreateRequest.getConfirmSms());
-        campaignCreateRequestBO.setSlotFullText(campaignCreateRequest.getSlotFullText());
-        campaignCreateRequestBO.setNotifyEmail(campaignCreateRequest.getNotifyEmail());
-        campaignCreateRequestBO.setHeaderId(campaignCreateRequest.getHeaderId());
-        campaignCreateRequestBO.setCreatedBy(campaignCreateRequest.getCreatedBy());
-        campaignCreateRequestBO.setIsallowOnFull(campaignCreateRequest.getIsallowOnFull());
-        campaignCreateRequestBO.setIsPublished(campaignCreateRequest.getIsPublished());
-        campaignCreateRequestBO.setEmailSubject(campaignCreateRequest.getEmailSubject());
-
-        MessageResponse messageResponse = new MessageResponse();
-        CampaignRequestHandler campaignRequestHandler = new CampaignRequestHandler();
-        String id;
+    public Response createCampaign(CampaignCreateRequest campaignCreateRequest, @HeaderParam("Auth") String auth) {
         try {
-              id = campaignRequestHandler.createCampaign(campaignCreateRequestBO);
-              return ResponseGenerator.generateSuccessResponse(messageResponse,id);
+            if (auth != null && UserRequestValidation.isRequestValid(auth)) {
+                CampaignCreateRequestBO campaignCreateRequestBO = new CampaignCreateRequestBO();
+
+                campaignCreateRequestBO.setName(campaignCreateRequest.getName());
+                campaignCreateRequestBO.setDesc(campaignCreateRequest.getDesc());
+                campaignCreateRequestBO.setDates(campaignCreateRequest.getDates());
+                campaignCreateRequestBO.setNoOfPerson(campaignCreateRequest.getNoOfPerson());
+                campaignCreateRequestBO.setSlots(campaignCreateRequest.getSlots());
+                campaignCreateRequestBO.setCampaignOverText(campaignCreateRequest.getCampaignOverText());
+                campaignCreateRequestBO.setConfirmEmail(campaignCreateRequest.getConfirmEmail());
+                campaignCreateRequestBO.setConfirmSms(campaignCreateRequest.getConfirmSms());
+                campaignCreateRequestBO.setSlotFullText(campaignCreateRequest.getSlotFullText());
+                campaignCreateRequestBO.setNotifyEmail(campaignCreateRequest.getNotifyEmail());
+                campaignCreateRequestBO.setHeaderId(campaignCreateRequest.getHeaderId());
+                campaignCreateRequestBO.setCreatedBy(campaignCreateRequest.getCreatedBy());
+                campaignCreateRequestBO.setIsallowOnFull(campaignCreateRequest.getIsallowOnFull());
+                campaignCreateRequestBO.setIsPublished(campaignCreateRequest.getIsPublished());
+                campaignCreateRequestBO.setEmailSubject(campaignCreateRequest.getEmailSubject());
+
+                MessageResponse messageResponse = new MessageResponse();
+                CampaignRequestHandler campaignRequestHandler = new CampaignRequestHandler();
+                String id = campaignRequestHandler.createCampaign(campaignCreateRequestBO);
+                return ResponseGenerator.generateSuccessResponse(messageResponse, id);
+
+            } else {
+                return ResponseGenerator.generateResponse(UserRequestValidation.getUnautheticatedResponse());
+            }
         } catch (Exception e1) {
             e1.printStackTrace();
-            return ResponseGenerator.generateFailureResponse(messageResponse, "New campaign registration failed");
+            MessageResponse messageResponse = new MessageResponse();
+            return ResponseGenerator.generateFailureResponse(messageResponse, "something went wrong while processing.");
         }
     }
 
@@ -60,48 +66,54 @@ public class CampaignService {
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
     @Path("/update")
-    public Response updateCampaign(CampaignUpdateRequest campaignUpdateRequest) throws Exception {
-        CampaignUpdateRequestBO campaignUpdateRequestBO = new CampaignUpdateRequestBO();
-
-        campaignUpdateRequestBO.setId(campaignUpdateRequest.getId());
-        campaignUpdateRequestBO.setHeaderId(campaignUpdateRequest.getHeaderId());
-        campaignUpdateRequestBO.setStatus(campaignUpdateRequest.getStatus());
-        campaignUpdateRequestBO.setIsPublished(campaignUpdateRequest.getIsPublished());
-        campaignUpdateRequestBO.setName(campaignUpdateRequest.getName());
-        campaignUpdateRequestBO.setDesc(campaignUpdateRequest.getDesc());
-        campaignUpdateRequestBO.setDates(campaignUpdateRequest.getDates());
-        campaignUpdateRequestBO.setNoOfPerson(campaignUpdateRequest.getNoOfPerson());
-         campaignUpdateRequestBO.setSlots(campaignUpdateRequest.getSlots());
-        campaignUpdateRequestBO.setCampaignOverText(campaignUpdateRequest.getCampaignOverText());
-        campaignUpdateRequestBO.setConfirmEmail(campaignUpdateRequest.getConfirmEmail());
-        campaignUpdateRequestBO.setConfirmSms(campaignUpdateRequest.getConfirmSms());
-        campaignUpdateRequestBO.setSlotFullText(campaignUpdateRequest.getSlotFullText());
-        campaignUpdateRequestBO.setNotifyEmail(campaignUpdateRequest.getNotifyEmail());
-        campaignUpdateRequestBO.setIsallowOnFull(campaignUpdateRequest.getIsallowOnFull());
-        campaignUpdateRequestBO.setEmailSubject(campaignUpdateRequest.getEmailSubject());
-
-        MessageResponse messageResponse = new MessageResponse();
-        CampaignRequestHandler campaignRequestHandler = new CampaignRequestHandler();
-        Boolean isProcessed = campaignRequestHandler.updateCampaign(campaignUpdateRequestBO);
+    public Response updateCampaign(CampaignUpdateRequest campaignUpdateRequest, @HeaderParam("Auth") String auth) {
         try {
-            if(isProcessed) {
-                return ResponseGenerator.generateSuccessResponse(messageResponse, "Campaign details updated successfully.");
-            }else{
-                return ResponseGenerator.generateFailureResponse(messageResponse, "Failed to update the campaign details.");
+            if (auth != null && UserRequestValidation.isRequestValid(auth)) {
+                CampaignUpdateRequestBO campaignUpdateRequestBO = new CampaignUpdateRequestBO();
+
+                campaignUpdateRequestBO.setId(campaignUpdateRequest.getId());
+                campaignUpdateRequestBO.setHeaderId(campaignUpdateRequest.getHeaderId());
+                campaignUpdateRequestBO.setStatus(campaignUpdateRequest.getStatus());
+                campaignUpdateRequestBO.setIsPublished(campaignUpdateRequest.getIsPublished());
+                campaignUpdateRequestBO.setName(campaignUpdateRequest.getName());
+                campaignUpdateRequestBO.setDesc(campaignUpdateRequest.getDesc());
+                campaignUpdateRequestBO.setDates(campaignUpdateRequest.getDates());
+                campaignUpdateRequestBO.setNoOfPerson(campaignUpdateRequest.getNoOfPerson());
+                campaignUpdateRequestBO.setSlots(campaignUpdateRequest.getSlots());
+                campaignUpdateRequestBO.setCampaignOverText(campaignUpdateRequest.getCampaignOverText());
+                campaignUpdateRequestBO.setConfirmEmail(campaignUpdateRequest.getConfirmEmail());
+                campaignUpdateRequestBO.setConfirmSms(campaignUpdateRequest.getConfirmSms());
+                campaignUpdateRequestBO.setSlotFullText(campaignUpdateRequest.getSlotFullText());
+                campaignUpdateRequestBO.setNotifyEmail(campaignUpdateRequest.getNotifyEmail());
+                campaignUpdateRequestBO.setIsallowOnFull(campaignUpdateRequest.getIsallowOnFull());
+                campaignUpdateRequestBO.setEmailSubject(campaignUpdateRequest.getEmailSubject());
+
+                MessageResponse messageResponse = new MessageResponse();
+                CampaignRequestHandler campaignRequestHandler = new CampaignRequestHandler();
+
+                Boolean isProcessed = campaignRequestHandler.updateCampaign(campaignUpdateRequestBO);
+                if (isProcessed) {
+                    return ResponseGenerator.generateSuccessResponse(messageResponse, "Campaign details updated successfully.");
+                } else {
+                    return ResponseGenerator.generateFailureResponse(messageResponse, "Failed to update the campaign details.");
+                }
+
+            } else {
+                return ResponseGenerator.generateResponse(UserRequestValidation.getUnautheticatedResponse());
             }
-        } catch (Exception e1) {
-            e1.printStackTrace();
-            return ResponseGenerator.generateFailureResponse(messageResponse, "Failed to update the campaign details.");
+        } catch (Exception e) {
+            e.printStackTrace();
+            MessageResponse messageResponse = new MessageResponse();
+            return ResponseGenerator.generateFailureResponse(messageResponse, "Something went wrong while processing.");
         }
     }
-
 
 
     @GET
     @Path("/slots/{campaign_id}")
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
-    public Response getsSlots(@PathParam("campaign_id") int id) throws Exception {
+    public Response getsSlots(@PathParam("campaign_id") String id) {
 
         CustomerRequestHandler customerRequestHandler = new CustomerRequestHandler();
         AvailableSlotResponse availableSlotResponse = new AvailableSlotResponse();
@@ -119,48 +131,55 @@ public class CampaignService {
     @Path("/info/{campaign_id}")
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
-    public Response getCampaignInfo(@HeaderParam("sessionId") String sessionId,@PathParam("campaign_id") String campaignId) throws Exception {
+    public Response getCampaignInfo(@HeaderParam("sessionId") String sessionId, @PathParam("campaign_id") String campaignId) {
 
         CampaignRequestHandler campaignRequestHandler = new CampaignRequestHandler();
         CampaignInfoResponse getCampaignResponse;
         GetCampaignResponse getCampaignResp;
         MessageResponse messageResponse = new MessageResponse();
         try {
-            if(sessionId==null) {
+            if (sessionId == null) {
                 getCampaignResponse = campaignRequestHandler.getCampaignInfo(campaignId);
                 return ResponseGenerator.generateSuccessResponse(getCampaignResponse, "Campaign details");
-            }else{
-                getCampaignResp=campaignRequestHandler.getCampaign(0,campaignId);
+            } else {
+                getCampaignResp = campaignRequestHandler.getCampaign(0, campaignId);
                 return ResponseGenerator.generateSuccessResponse(getCampaignResp, "Campaign details");
             }
 
         } catch (CampaignNotFoundException e) {
             e.printStackTrace();
             return ResponseGenerator.generateFailureResponse(messageResponse, "Campaign information found invalid campaign id");
-        }catch (Exception e) {
+        } catch (Exception e) {
             e.printStackTrace();
-            return ResponseGenerator.generateFailureResponse(messageResponse, "Failed to retrieve. ");
+            return ResponseGenerator.generateFailureResponse(messageResponse, "Something went wrong.");
         }
+
     }
 
     @GET
     @Path("/details/{campaign_id}")
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
-    public Response getCampaignInfo(@PathParam("campaign_id") int campaignId) throws Exception {
-
-        CampaignRequestHandler campaignRequestHandler = new CampaignRequestHandler();
-        GetCampaignResponse getCampaignResponse;
-        MessageResponse messageResponse = new MessageResponse();
+    public Response getCampaignInfo(@PathParam("campaign_id") int campaignId, @HeaderParam("Auth") String auth) {
         try {
-            getCampaignResponse=campaignRequestHandler.getCampaign(campaignId, "");
-            return ResponseGenerator.generateSuccessResponse(getCampaignResponse, "Campaign details");
-        } catch (CampaignNotFoundException e) {
+            if (auth != null && UserRequestValidation.isRequestValid(auth)) {
+                CampaignRequestHandler campaignRequestHandler = new CampaignRequestHandler();
+                GetCampaignResponse getCampaignResponse;
+                MessageResponse messageResponse = new MessageResponse();
+                try {
+                    getCampaignResponse = campaignRequestHandler.getCampaign(campaignId, "");
+                    return ResponseGenerator.generateSuccessResponse(getCampaignResponse, "Campaign details");
+                } catch (CampaignNotFoundException e) {
+                    e.printStackTrace();
+                    return ResponseGenerator.generateFailureResponse(messageResponse, "Campaign information found invalid campaign id");
+                }
+            } else {
+                return ResponseGenerator.generateResponse(UserRequestValidation.getUnautheticatedResponse());
+            }
+        } catch (Exception e) {
             e.printStackTrace();
-            return ResponseGenerator.generateFailureResponse(messageResponse, "Campaign information found invalid campaign id");
-        }catch (Exception e) {
-            e.printStackTrace();
-            return ResponseGenerator.generateFailureResponse(messageResponse, "Failed to retrieve. ");
+            MessageResponse messageResponse = new MessageResponse();
+            return ResponseGenerator.generateFailureResponse(messageResponse, "Something went wrong while processing.");
         }
     }
 
@@ -169,16 +188,20 @@ public class CampaignService {
     @Path("/list/{campaign_admin}")
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
-    public Response getCampaignList(@PathParam("campaign_admin") int campaignAdmin) throws Exception {
-        CampaignRequestHandler campaignRequestHandler = new CampaignRequestHandler();
-        CampaignListResponse campaignListResponse = new CampaignListResponse();
-        MessageResponse messageResponse = new MessageResponse();
+    public Response getCampaignList(@PathParam("campaign_admin") int campaignAdmin, @HeaderParam("Auth") String auth) {
         try {
-            campaignListResponse.setCampaigns(campaignRequestHandler.getCampaigns(campaignAdmin));
-            return ResponseGenerator.generateSuccessResponse(campaignListResponse, "List of  campaigns.");
-        } catch (SQLException e) {
+            if (auth != null && UserRequestValidation.isRequestValid(auth)) {
+                CampaignRequestHandler campaignRequestHandler = new CampaignRequestHandler();
+                CampaignListResponse campaignListResponse = new CampaignListResponse();
+                campaignListResponse.setCampaigns(campaignRequestHandler.getCampaigns(campaignAdmin));
+                return ResponseGenerator.generateSuccessResponse(campaignListResponse, "List of  campaigns.");
+            } else {
+                return ResponseGenerator.generateResponse(UserRequestValidation.getUnautheticatedResponse());
+            }
+        } catch (Exception e) {
             e.printStackTrace();
-            return ResponseGenerator.generateFailureResponse(messageResponse, "Failed to retrieve.");
+            MessageResponse messageResponse = new MessageResponse();
+            return ResponseGenerator.generateFailureResponse(messageResponse, "Something went wrong while processing.");
         }
     }
 }

@@ -119,7 +119,7 @@ public class CustomerDAO {
     }
 
 
-    public synchronized Integer insertUser(RegisterDto registerDto) throws Exception {
+    public synchronized Integer insertUser(RegisterDto registerDto) throws SQLException {
         PreparedStatement preparedStatement = null;
         Connection connection = null;
         StringBuilder query = new StringBuilder("INSERT INTO customer_details(campaign_master_id,name,date,time_slot,resource,no_of_person,remark,gender,dob,locality,email,mobile) values (?,?,?,?,?,?,?,?,?,?,?,?)");

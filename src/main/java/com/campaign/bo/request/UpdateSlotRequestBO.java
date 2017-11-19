@@ -2,15 +2,15 @@ package com.campaign.bo.request;
 
 public class UpdateSlotRequestBO {
     private int id;
-    private int campaignId;
+    private String campaignId;
     private String time;
     private String date;
 
-    public int getCampaignId() {
+    public String getCampaignId() {
         return campaignId;
     }
 
-    public void setCampaignId(int campaignId) {
+    public void setCampaignId(String campaignId) {
         this.campaignId = campaignId;
     }
 
@@ -46,7 +46,7 @@ public class UpdateSlotRequestBO {
         UpdateSlotRequestBO that = (UpdateSlotRequestBO) o;
 
         if (id != that.id) return false;
-        if (campaignId != that.campaignId) return false;
+        if (campaignId != null ? !campaignId.equals(that.campaignId) : that.campaignId != null) return false;
         if (time != null ? !time.equals(that.time) : that.time != null) return false;
         return date != null ? date.equals(that.date) : that.date == null;
     }
@@ -54,9 +54,9 @@ public class UpdateSlotRequestBO {
     @Override
     public int hashCode() {
         int result = id;
+        result = 31 * result + (campaignId != null ? campaignId.hashCode() : 0);
         result = 31 * result + (time != null ? time.hashCode() : 0);
         result = 31 * result + (date != null ? date.hashCode() : 0);
-        result = 31 * result + campaignId;
         return result;
     }
 
@@ -64,7 +64,7 @@ public class UpdateSlotRequestBO {
     public String toString() {
         return "UpdateSlotRequestBO{" +
                 "id=" + id +
-                ", campaignId=" + campaignId +
+                ", campaignId='" + campaignId + '\'' +
                 ", time='" + time + '\'' +
                 ", date='" + date + '\'' +
                 '}';

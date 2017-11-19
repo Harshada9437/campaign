@@ -15,13 +15,13 @@ public class OtpRequest {
     private String dob;
     private String resource;
     private int noOfPerson;
-    private int campaignId;
+    private String campaignId;
 
-    public int getCampaignId() {
+    public String getCampaignId() {
         return campaignId;
     }
 
-    public void setCampaignId(int campaignId) {
+    public void setCampaignId(String campaignId) {
         this.campaignId = campaignId;
     }
 
@@ -121,7 +121,6 @@ public class OtpRequest {
         OtpRequest that = (OtpRequest) o;
 
         if (noOfPerson != that.noOfPerson) return false;
-        if (campaignId != that.campaignId) return false;
         if (fullName != null ? !fullName.equals(that.fullName) : that.fullName != null) return false;
         if (email != null ? !email.equals(that.email) : that.email != null) return false;
         if (date != null ? !date.equals(that.date) : that.date != null) return false;
@@ -131,7 +130,8 @@ public class OtpRequest {
         if (gender != null ? !gender.equals(that.gender) : that.gender != null) return false;
         if (remark != null ? !remark.equals(that.remark) : that.remark != null) return false;
         if (dob != null ? !dob.equals(that.dob) : that.dob != null) return false;
-        return resource != null ? resource.equals(that.resource) : that.resource == null;
+        if (resource != null ? !resource.equals(that.resource) : that.resource != null) return false;
+        return campaignId != null ? campaignId.equals(that.campaignId) : that.campaignId == null;
     }
 
     @Override
@@ -147,7 +147,7 @@ public class OtpRequest {
         result = 31 * result + (dob != null ? dob.hashCode() : 0);
         result = 31 * result + (resource != null ? resource.hashCode() : 0);
         result = 31 * result + noOfPerson;
-        result = 31 * result + campaignId;
+        result = 31 * result + (campaignId != null ? campaignId.hashCode() : 0);
         return result;
     }
 
@@ -165,7 +165,7 @@ public class OtpRequest {
                 ", dob='" + dob + '\'' +
                 ", resource='" + resource + '\'' +
                 ", noOfPerson=" + noOfPerson +
-                ", campaignId=" + campaignId +
+                ", campaignId='" + campaignId + '\'' +
                 '}';
     }
 }

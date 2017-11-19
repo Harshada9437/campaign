@@ -3,13 +3,13 @@ package com.campaign.rest.request;
 public class VerifyOtpRequest {
     private String mobile;
     private String otp;
-    private int campaignId;
+    private String campaignId;
 
-    public int getCampaignId() {
+    public String getCampaignId() {
         return campaignId;
     }
 
-    public void setCampaignId(int campaignId) {
+    public void setCampaignId(String campaignId) {
         this.campaignId = campaignId;
     }
 
@@ -36,16 +36,16 @@ public class VerifyOtpRequest {
 
         VerifyOtpRequest that = (VerifyOtpRequest) o;
 
-        if (campaignId != that.campaignId) return false;
         if (mobile != null ? !mobile.equals(that.mobile) : that.mobile != null) return false;
-        return otp != null ? otp.equals(that.otp) : that.otp == null;
+        if (otp != null ? !otp.equals(that.otp) : that.otp != null) return false;
+        return campaignId != null ? campaignId.equals(that.campaignId) : that.campaignId == null;
     }
 
     @Override
     public int hashCode() {
         int result = mobile != null ? mobile.hashCode() : 0;
         result = 31 * result + (otp != null ? otp.hashCode() : 0);
-        result = 31 * result + campaignId;
+        result = 31 * result + (campaignId != null ? campaignId.hashCode() : 0);
         return result;
     }
 
@@ -54,7 +54,7 @@ public class VerifyOtpRequest {
         return "VerifyOtpRequest{" +
                 "mobile='" + mobile + '\'' +
                 ", otp='" + otp + '\'' +
-                ", campaignId=" + campaignId +
+                ", campaignId='" + campaignId + '\'' +
                 '}';
     }
 }

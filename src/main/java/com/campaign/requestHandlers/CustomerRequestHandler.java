@@ -61,18 +61,18 @@ public class CustomerRequestHandler {
         return isProcessed;
     }
 
-    public Boolean register(RegisterBo registerBo) throws Exception {
+    public Boolean register(RegisterBo registerBo) throws CustomerNotFoundException, SQLException, CampaignNotFoundException {
         Boolean isProcessed;
         CustomerDAO customerDAO = new CustomerDAO();
         CampaignDAO campaignDAO = new CampaignDAO();
 
-        CampaignDTO campaignDTO = campaignDAO.getCampaignInfoById(registerBo.getCampaignId());
+        CampaignDTO campaignDTO = campaignDAO.getCampaignInfo(registerBo.getCampaignId());
         if (campaignDTO.getIsPublished() == 1) {
             CustomerDTO customerDTO = customerDAO.getCustomerById(registerBo.getCustomerId());
             isProcessed = customerDAO.confirmRegistration(registerBo.getCustomerId());
             if (isProcessed) {
-                customerDAO.updateCount(customerDTO.getNoOfPerson(), customerDTO.getTimeSlot(), customerDTO.getDate(), registerBo.getCampaignId());
-                sendConfirmation(customerDTO,campaignDTO);
+                customerDAO.updateCount(customerDTO.getNoOfPerson(), customerDTO.getTimeSlot(), customerDTO.getDate(), campaignDTO.getId());
+                sendConfirmation(customerDTO, campaignDTO);
             }
         } else {
             isProcessed = Boolean.TRUE;
@@ -84,7 +84,7 @@ public class CustomerRequestHandler {
         return isProcessed;
     }
 
-    public void sendConfirmation(CustomerDTO customerDTO,CampaignDTO campaignDTO) {
+    public void sendConfirmation(CustomerDTO customerDTO, CampaignDTO campaignDTO) {
         SendSms sendSms = new SendSms();
         sendSms.newRegistration(customerDTO.getFullName(), customerDTO.getDate(), customerDTO.getTimeSlot(), customerDTO.getMobile(), customerDTO.getNoOfPerson(), campaignDTO.getSms(), campaignDTO.getConfirmSms(), "");
         EmailService.newRegistration(campaignDTO.getEmailSubject(), campaignDTO.getConfirmEmail(), customerDTO.getEmail(), customerDTO.getFullName(), customerDTO.getDate(), customerDTO.getTimeSlot(), customerDTO.getNoOfPerson(), campaignDTO.getSmtp(), "");
@@ -107,7 +107,7 @@ public class CustomerRequestHandler {
         return customerResponse;
     }
 
-    private RegisterDto buildUserDTOFromBO(OtpRequestBO userRequestBO) {
+    private RegisterDto buildUserDTOFromBO(OtpRequestBO userRequestBO, int id) {
         RegisterDto registerDto = new RegisterDto();
         registerDto.setFullName(userRequestBO.getFullName());
         registerDto.setEmail(userRequestBO.getEmail());
@@ -120,22 +120,22 @@ public class CustomerRequestHandler {
         registerDto.setNoOfPerson(userRequestBO.getNoOfPerson());
         registerDto.setGender(userRequestBO.getGender());
         registerDto.setLocality(userRequestBO.getLocality());
-        registerDto.setCampaignId(userRequestBO.getCampaignId());
+        registerDto.setCampaignId(id);
         return registerDto;
     }
 
-    public Boolean updateSlot(UpdateSlotRequestBO updateSlotRequestBO) throws SQLException, CustomerNotFoundException {
+    public Boolean updateSlot(UpdateSlotRequestBO updateSlotRequestBO) throws SQLException, CustomerNotFoundException, CampaignNotFoundException {
 
         Boolean isProcessed;
         CustomerDAO customerDAO = new CustomerDAO();
         CampaignDAO campaignDAO = new CampaignDAO();
 
-        CampaignDTO campaignDTO = campaignDAO.getCampaignInfoById(updateSlotRequestBO.getCampaignId());
+        CampaignDTO campaignDTO = campaignDAO.getCampaignInfo(updateSlotRequestBO.getCampaignId());
         CustomerDTO customerDTO = customerDAO.getCustomerById(updateSlotRequestBO.getId());
-        isProcessed = customerDAO.updateSlot(buildAppUserDTOFromBO(updateSlotRequestBO), updateSlotRequestBO.getCampaignId(), customerDTO.getNoOfPerson());
+        isProcessed = customerDAO.updateSlot(buildAppUserDTOFromBO(updateSlotRequestBO), campaignDTO.getId(), customerDTO.getNoOfPerson());
 
         if (isProcessed) {
-        sendConfirmation(customerDTO,campaignDTO);
+            sendConfirmation(customerDTO, campaignDTO);
         }
 
         return isProcessed;
@@ -200,16 +200,15 @@ public class CustomerRequestHandler {
         return token;
     }
 
-    public int generateOtp(OtpRequestBO otpRequestBO, CampaignDTO campaignDTO) throws Exception {
-        int id = 0;
+    public int generateOtp(OtpRequestBO otpRequestBO, CampaignDTO campaignDTO) throws SQLException {
         CustomerDAO customerDAO = new CustomerDAO();
         SmsDetails smsDetails = SmsDAO.getSmsSetting(campaignDTO.getSms().getId());
-        id = customerDAO.getCustomerId(otpRequestBO.getMobile(), otpRequestBO.getCampaignId());
+        int id = customerDAO.getCustomerId(otpRequestBO.getMobile(), campaignDTO.getId());
         String otp1 = customerDAO.getOtp(otpRequestBO.getMobile());
         if (id == 0) {
             otp1 = verifyOtp(otp1, otpRequestBO.getMobile());
             if (campaignDTO.getIsPublished() == 1) {
-                id = customerDAO.insertUser(buildUserDTOFromBO(otpRequestBO));
+                id = customerDAO.insertUser(buildUserDTOFromBO(otpRequestBO,campaignDTO.getId()));
             }
             SendSms sendSms = new SendSms();
             sendSms.NewUserSignup(otpRequestBO.getMobile(), Integer.parseInt(otp1), smsDetails);
@@ -222,7 +221,7 @@ public class CustomerRequestHandler {
         return id;
     }
 
-    private  String verifyOtp(String otp1, String mobileNumber) throws SQLException {
+    private String verifyOtp(String otp1, String mobileNumber) throws SQLException {
 
         if (otp1 != null && otp1.equals("")) {
             CustomerDAO customerDAO = new CustomerDAO();
@@ -234,14 +233,14 @@ public class CustomerRequestHandler {
         return otp1;
     }
 
-    public List<DateResponse> getSlots(int id) throws SQLException, CampaignNotFoundException, ParseException {
+    public List<DateResponse> getSlots(String hashId) throws SQLException, CampaignNotFoundException, ParseException {
         List<DateResponse> slots = new ArrayList<DateResponse>();
         CustomerDAO customerDAO = new CustomerDAO();
         CampaignDAO campaignDAO = new CampaignDAO();
         DateResponse dateResponse = new DateResponse();
         List<CouponResponse> coupons = new ArrayList<CouponResponse>();
-
-        if (campaignDAO.getStatus(id).equals("A")) {
+        int id = campaignDAO.getId(hashId);
+        if (campaignDAO.getStatus(hashId).equals("A")) {
             Timestamp today = new Timestamp(new Date().getTime());
             today.setHours(0);
             today.setMinutes(0);
@@ -265,10 +264,10 @@ public class CustomerRequestHandler {
                     times = new ArrayList<Slots>();
                     dateResponse = new DateResponse();
                     dateResponse.setDate(DateUtil.format(DateUtil.getTimeStampFromString(coupon.getDate()), "dd-MMM-yyyy"));
-                    times=addSlots(coupon,times);
+                    times = addSlots(coupon, times);
                     dates.add(coupon.getDate());
                 } else {
-                   times=addSlots(coupon,times);
+                    times = addSlots(coupon, times);
                 }
                 i++;
             }

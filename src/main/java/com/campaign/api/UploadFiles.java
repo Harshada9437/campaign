@@ -26,7 +26,7 @@ public class UploadFiles {
     @Consumes(MediaType.MULTIPART_FORM_DATA)
     @Produces(MediaType.APPLICATION_JSON)
     public Response uploadFile(FormDataMultiPart form,
-                               @QueryParam("fn") String fileName) throws Exception {
+                               @QueryParam("fn") String fileName) {
         //if (auth != null && (AppUserRequestValidation.isRequestValid(auth))) {
             FormDataBodyPart filePart = form.getField("file");
 

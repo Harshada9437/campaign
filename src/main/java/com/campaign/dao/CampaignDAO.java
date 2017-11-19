@@ -268,7 +268,7 @@ public class CampaignDAO {
 
     }
 
-    public String getStatus(int campaignId) throws SQLException {
+    public String getStatus(String campaignId) throws SQLException {
         Connection connection = null;
         Statement statement = null;
         String status = "";
@@ -276,7 +276,7 @@ public class CampaignDAO {
             connection = new ConnectionHandler().getConnection();
             connection.setAutoCommit(false);
             statement = connection.createStatement();
-            StringBuilder query = new StringBuilder("SELECT * FROM campaign_master where id=" + campaignId);
+            StringBuilder query = new StringBuilder("SELECT * FROM campaign_master where link_hash_id='" + campaignId+"'");
             ResultSet resultSet = statement.executeQuery(query.toString());
             while (resultSet.next()) {
                 status = resultSet.getString("status");
@@ -293,6 +293,33 @@ public class CampaignDAO {
             }
         }
         return status;
+    }
+
+    public int getId(String campaignId) throws SQLException {
+        Connection connection = null;
+        Statement statement = null;
+        int id = 0;
+        try {
+            connection = new ConnectionHandler().getConnection();
+            connection.setAutoCommit(false);
+            statement = connection.createStatement();
+            StringBuilder query = new StringBuilder("SELECT id FROM campaign_master where link_hash_id='" + campaignId+"'");
+            ResultSet resultSet = statement.executeQuery(query.toString());
+            while (resultSet.next()) {
+                id = resultSet.getInt("id");
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+            throw e;
+        } finally {
+            try {
+                statement.close();
+                connection.close();
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+        }
+        return id;
     }
 
     public CampaignSlotDTO getOverallSlot(int campaignId) throws SQLException {
