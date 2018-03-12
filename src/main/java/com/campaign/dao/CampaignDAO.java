@@ -16,7 +16,7 @@ public class CampaignDAO {
     public String createCampaign(CampaignDTO campaignDTO) throws SQLException {
         PreparedStatement preparedStatement = null;
         Connection connection = null;
-        StringBuilder query = new StringBuilder("INSERT INTO campaign_master(email_subject,is_published,name,description,no_of_person,is_allow_on_full,confirm_sms,confirm_email,notify_email,campaign_header_id,slot_full_sms,campaign_over_text,campaign_admin,link_hash_id) values (?,?,?,?,?,?,?,?,?,?,?,?,?,?)");
+        StringBuilder query = new StringBuilder("INSERT INTO campaign_master(isPromoCampaign,campaign_location,email_subject,is_published,name,description,no_of_person,is_allow_on_full,confirm_sms,confirm_email,notify_email,campaign_header_id,slot_full_sms,campaign_over_text,campaign_admin,link_hash_id) values (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)");
         String id = "";
         try {
             int parameterIndex = 1;
@@ -24,6 +24,8 @@ public class CampaignDAO {
             connection.setAutoCommit(false);
             preparedStatement = connection
                     .prepareStatement(query.toString());
+            preparedStatement.setInt(parameterIndex++, campaignDTO.getIsPromoCampaign());
+            preparedStatement.setString(parameterIndex++, campaignDTO.getCampaignLocation());
             preparedStatement.setString(parameterIndex++, campaignDTO.getEmailSubject());
             preparedStatement.setInt(parameterIndex++, campaignDTO.getIsPublished());
             preparedStatement.setString(parameterIndex++,
@@ -132,6 +134,8 @@ public class CampaignDAO {
 
             while (resultSet.next()) {
                 CampaignDTO campaignDTO = new CampaignDTO();
+                campaignDTO.setIsPromoCampaign(resultSet.getInt("isPromoCampaign"));
+                campaignDTO.setCampaignLocation(resultSet.getString("campaign_location"));
                 campaignDTO.setId(resultSet.getInt("id"));
                 campaignDTO.setStatus(resultSet.getString("status"));
                 campaignDTO.setIsPublished(resultSet.getInt("is_published"));
@@ -184,6 +188,8 @@ public class CampaignDAO {
             while (resultSet.next()) {
                 i++;
                 campaignDTO.setId(resultSet.getInt("id"));
+                campaignDTO.setIsPromoCampaign(resultSet.getInt("isPromoCampaign"));
+                campaignDTO.setCampaignLocation(resultSet.getString("campaign_location"));
                 campaignDTO.setStatus(resultSet.getString("status"));
                 campaignDTO.setName(resultSet.getString("name"));
                 campaignDTO.setDesc(resultSet.getString("description"));
@@ -234,6 +240,8 @@ public class CampaignDAO {
             while (resultSet.next()) {
 
                 campaignDTO.setId(resultSet.getInt("id"));
+                campaignDTO.setIsPromoCampaign(resultSet.getInt("isPromoCampaign"));
+                campaignDTO.setCampaignLocation(resultSet.getString("campaign_location"));
                 campaignDTO.setStatus(resultSet.getString("status"));
                 campaignDTO.setName(resultSet.getString("name"));
                 campaignDTO.setDesc(resultSet.getString("description"));
@@ -425,9 +433,11 @@ public class CampaignDAO {
             connection.setAutoCommit(false);
 
             preparedStatement = connection
-                    .prepareStatement("UPDATE campaign_master SET campaign_header_id=?,status=?,is_published=?, name=?, description =?, no_of_person =?, " +
+                    .prepareStatement("UPDATE campaign_master SET campaign_location=?,campaign_header_id=?,status=?,is_published=?, name=?, description =?, no_of_person =?, " +
                             "is_allow_on_full=?, confirm_sms = ?, confirm_email=?, notify_email=?,slot_full_sms=?,campaign_over_text=?,email_subject=? WHERE id =?");
 
+            preparedStatement.setString(parameterIndex++,
+                    campaignDTO.getCampaignLocation());
             preparedStatement.setInt(parameterIndex++,
                     campaignDTO.getHeaderId());
             preparedStatement.setString(parameterIndex++,
@@ -511,56 +521,5 @@ public class CampaignDAO {
 
         statement.close();
         connection.close();
-    }
-
-    public CampaignDTO getCampaign(int campaignId) throws SQLException, CampaignNotFoundException {
-        Connection connection = null;
-        Statement statement = null;
-        CampaignDTO campaignDTO = new CampaignDTO();
-        try {
-            connection = new ConnectionHandler().getConnection();
-            connection.setAutoCommit(false);
-            statement = connection.createStatement();
-            StringBuilder query = new StringBuilder("SELECT * FROM campaign_master where id=" + campaignId);
-            ResultSet resultSet = statement.executeQuery(query.toString());
-            int i = 0;
-            while (resultSet.next()) {
-                i++;
-                campaignDTO.setId(resultSet.getInt("id"));
-                campaignDTO.setStatus(resultSet.getString("status"));
-                campaignDTO.setLinkHashId(resultSet.getString("link_hash_id"));
-                campaignDTO.setName(resultSet.getString("name"));
-                campaignDTO.setDesc(resultSet.getString("description"));
-                campaignDTO.setNoOfPerson(resultSet.getInt("no_of_person"));
-                campaignDTO.setIsAllowOnFull(resultSet.getInt("is_allow_on_full"));
-                campaignDTO.setCreatedBy(resultSet.getInt("campaign_admin"));
-                campaignDTO.setCampaignOverText(resultSet.getString("campaign_over_text"));
-                campaignDTO.setSlotFullText(resultSet.getString("slot_full_sms"));
-                campaignDTO.setConfirmEmail(resultSet.getString("confirm_email"));
-                campaignDTO.setConfirmSms(resultSet.getString("confirm_sms"));
-                campaignDTO.setNotifyEmail(resultSet.getString("notify_email"));
-                campaignDTO.setHeaderId(resultSet.getInt("campaign_header_id"));
-                campaignDTO.setIsPublished(resultSet.getInt("is_published"));
-                HeaderDetails headerDetails = HeaderDAO.getHeaderSetting(campaignDTO.getHeaderId());
-                campaignDTO.setHeader(headerDetails);
-                campaignDTO.setSms(SmsDAO.getSmsSetting(headerDetails.getSmsId()));
-                campaignDTO.setSmtp(SmtpDAO.getSmtpSetting(headerDetails.getSmtpId()));
-                campaignDTO.setEmailSubject(resultSet.getString("email_subject"));
-            }
-            if (i == 0) {
-                throw new CampaignNotFoundException("Campaign not found invalid campaign id.");
-            }
-        } catch (SQLException e) {
-            e.printStackTrace();
-            throw e;
-        } finally {
-            try {
-                statement.close();
-                connection.close();
-            } catch (SQLException e) {
-                e.printStackTrace();
-            }
-        }
-        return campaignDTO;
     }
 }

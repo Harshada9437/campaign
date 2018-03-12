@@ -3,7 +3,9 @@ package com.campaign.rest.response.customer;
 public class CustomerResponse {
     private int id;
     private int campaignId;
+    private int rating;
     private String fullName;
+    private String ageGroup;
     private String campaignName;
     private String email;
     private String date;
@@ -16,6 +18,22 @@ public class CustomerResponse {
     private String resource;
     private int noOfPerson;
     private int isConfirmed;
+
+    public int getRating() {
+        return rating;
+    }
+
+    public void setRating(int rating) {
+        this.rating = rating;
+    }
+
+    public String getAgeGroup() {
+        return ageGroup;
+    }
+
+    public void setAgeGroup(String ageGroup) {
+        this.ageGroup = ageGroup;
+    }
 
     public int getIsConfirmed() {
         return isConfirmed;
@@ -142,7 +160,9 @@ public class CustomerResponse {
         return "CustomerResponse{" +
                 "id=" + id +
                 ", campaignId=" + campaignId +
+                ", rating=" + rating +
                 ", fullName='" + fullName + '\'' +
+                ", ageGroup='" + ageGroup + '\'' +
                 ", campaignName='" + campaignName + '\'' +
                 ", email='" + email + '\'' +
                 ", date='" + date + '\'' +

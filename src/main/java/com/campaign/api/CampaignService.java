@@ -46,6 +46,8 @@ public class CampaignService {
                 campaignCreateRequestBO.setIsallowOnFull(campaignCreateRequest.getIsallowOnFull());
                 campaignCreateRequestBO.setIsPublished(campaignCreateRequest.getIsPublished());
                 campaignCreateRequestBO.setEmailSubject(campaignCreateRequest.getEmailSubject());
+                campaignCreateRequestBO.setIsPromoCampaign(campaignCreateRequest.getIsPromoCampaign());
+                campaignCreateRequestBO.setCampaignLocation(campaignCreateRequest.getCampaignLocation());
 
                 MessageResponse messageResponse = new MessageResponse();
                 CampaignRequestHandler campaignRequestHandler = new CampaignRequestHandler();
@@ -72,6 +74,8 @@ public class CampaignService {
                 CampaignUpdateRequestBO campaignUpdateRequestBO = new CampaignUpdateRequestBO();
 
                 campaignUpdateRequestBO.setId(campaignUpdateRequest.getId());
+                campaignUpdateRequestBO.setIsPromoCampaign(campaignUpdateRequest.getIsPromoCampaign());
+                campaignUpdateRequestBO.setCampaignLocation(campaignUpdateRequest.getCampaignLocation());
                 campaignUpdateRequestBO.setHeaderId(campaignUpdateRequest.getHeaderId());
                 campaignUpdateRequestBO.setStatus(campaignUpdateRequest.getStatus());
                 campaignUpdateRequestBO.setIsPublished(campaignUpdateRequest.getIsPublished());

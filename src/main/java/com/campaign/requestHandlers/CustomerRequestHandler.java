@@ -14,6 +14,7 @@ import com.campaign.dto.customer.UpdateSlotDTO;
 import com.campaign.dto.customer.VerifyOtpDTO;
 import com.campaign.rest.request.campaign.HeaderDetails;
 import com.campaign.rest.request.campaign.SmsDetails;
+import com.campaign.rest.request.customer.MobileRequest;
 import com.campaign.rest.response.campaign.CouponResponse;
 import com.campaign.rest.response.campaign.Slots;
 import com.campaign.rest.response.customer.CustomerResponse;
@@ -61,33 +62,52 @@ public class CustomerRequestHandler {
         return isProcessed;
     }
 
-    public Boolean register(RegisterBo registerBo) throws CustomerNotFoundException, SQLException, CampaignNotFoundException {
+    public Boolean checkMobile(MobileRequest mobileRequest) throws SQLException {
         Boolean isProcessed;
+        CustomerDAO customerDAO = new CustomerDAO();
+        CampaignDAO campaignDAO = new CampaignDAO();
+        int id = campaignDAO.getId(mobileRequest.getCampaignId());
+        isProcessed = customerDAO.checkMobile(mobileRequest.getMobile(),id);
+        return isProcessed;
+    }
+
+
+    public String register(RegisterBo registerBo) throws CustomerNotFoundException, SQLException, CampaignNotFoundException {
+        String coupon="";
         CustomerDAO customerDAO = new CustomerDAO();
         CampaignDAO campaignDAO = new CampaignDAO();
 
         CampaignDTO campaignDTO = campaignDAO.getCampaignInfo(registerBo.getCampaignId());
         if (campaignDTO.getIsPublished() == 1) {
             CustomerDTO customerDTO = customerDAO.getCustomerById(registerBo.getCustomerId());
-            isProcessed = customerDAO.confirmRegistration(registerBo.getCustomerId());
-            if (isProcessed) {
+             Boolean isProcessed = customerDAO.confirmRegistration(registerBo.getCustomerId());
+            if (isProcessed && registerBo.getIsSpecialCampaign()==0) {
                 customerDAO.updateCount(customerDTO.getNoOfPerson(), customerDTO.getTimeSlot(), customerDTO.getDate(), campaignDTO.getId());
-                sendConfirmation(customerDTO, campaignDTO);
+                coupon=sendConfirmation(customerDTO, campaignDTO,0);
+            }else{
+                if(!customerDAO.getCustomer(registerBo.getCustomerId())) {
+                    coupon = sendConfirmation(customerDTO, campaignDTO, registerBo.getIsSpecialCampaign());
+                }
             }
         } else {
-            isProcessed = Boolean.TRUE;
             SendSms sendSms = new SendSms();
-            sendSms.newRegistration(registerBo.getFullName(), registerBo.getDate(), registerBo.getTimeSlot(), registerBo.getMobile(), registerBo.getNoOfPerson(), campaignDTO.getSms(), campaignDTO.getConfirmSms(), "(Unpublished Campaign) ");
-            EmailService.newRegistration(campaignDTO.getEmailSubject(), campaignDTO.getConfirmEmail(), registerBo.getEmail(), registerBo.getFullName(), registerBo.getDate(), registerBo.getTimeSlot(), registerBo.getNoOfPerson(), campaignDTO.getSmtp(), "(Unpublished Campaign) ");
+            sendSms.newRegistration("UNPUBLISH",registerBo.getIsSpecialCampaign(),registerBo.getFullName(), registerBo.getDate(), registerBo.getTimeSlot(), registerBo.getMobile(), registerBo.getNoOfPerson(), campaignDTO.getSms(), campaignDTO.getConfirmSms(), "(Unpublished Campaign) ");
+            EmailService.newRegistration("UNPUBLISH",registerBo.getIsSpecialCampaign(),campaignDTO.getEmailSubject(), campaignDTO.getConfirmEmail(), registerBo.getEmail(), registerBo.getFullName(), registerBo.getDate(), registerBo.getTimeSlot(), registerBo.getNoOfPerson(), campaignDTO.getSmtp(), "(Unpublished Campaign) ");
         }
 
-        return isProcessed;
+        return coupon;
     }
 
-    public void sendConfirmation(CustomerDTO customerDTO, CampaignDTO campaignDTO) {
+    public String sendConfirmation(CustomerDTO customerDTO, CampaignDTO campaignDTO,int val) throws SQLException {
+        CustomerDAO customerDAO = new CustomerDAO();
+        String coupon="";
+        if(val==1){
+             coupon = customerDAO.getCoupon(customerDTO.getCampaignId(),customerDTO.getId());
+        }
         SendSms sendSms = new SendSms();
-        sendSms.newRegistration(customerDTO.getFullName(), customerDTO.getDate(), customerDTO.getTimeSlot(), customerDTO.getMobile(), customerDTO.getNoOfPerson(), campaignDTO.getSms(), campaignDTO.getConfirmSms(), "");
-        EmailService.newRegistration(campaignDTO.getEmailSubject(), campaignDTO.getConfirmEmail(), customerDTO.getEmail(), customerDTO.getFullName(), customerDTO.getDate(), customerDTO.getTimeSlot(), customerDTO.getNoOfPerson(), campaignDTO.getSmtp(), "");
+        sendSms.newRegistration(coupon,val,customerDTO.getFullName(), customerDTO.getDate(), customerDTO.getTimeSlot(), customerDTO.getMobile(), customerDTO.getNoOfPerson(), campaignDTO.getSms(), campaignDTO.getConfirmSms(), "");
+        EmailService.newRegistration(coupon,val,campaignDTO.getEmailSubject(), campaignDTO.getConfirmEmail(), customerDTO.getEmail(), customerDTO.getFullName(), customerDTO.getDate(), customerDTO.getTimeSlot(), customerDTO.getNoOfPerson(), campaignDTO.getSmtp(), "");
+        return coupon;
     }
 
     public GetCustomerResponse buildResponseFromDto(CustomerDTO customerDTO) throws SQLException {
@@ -121,6 +141,8 @@ public class CustomerRequestHandler {
         registerDto.setGender(userRequestBO.getGender());
         registerDto.setLocality(userRequestBO.getLocality());
         registerDto.setCampaignId(id);
+        registerDto.setRating(userRequestBO.getRating());
+        registerDto.setAgeGroup(userRequestBO.getAgeGroup());
         return registerDto;
     }
 
@@ -135,7 +157,7 @@ public class CustomerRequestHandler {
         isProcessed = customerDAO.updateSlot(buildAppUserDTOFromBO(updateSlotRequestBO), campaignDTO.getId(), customerDTO.getNoOfPerson());
 
         if (isProcessed) {
-            sendConfirmation(customerDTO, campaignDTO);
+            sendConfirmation(customerDTO, campaignDTO,0);
         }
 
         return isProcessed;
@@ -170,6 +192,8 @@ public class CustomerRequestHandler {
         for (CustomerDTO customerDTO : customerDTOs) {
             CustomerResponse customerResponse = new CustomerResponse();
             customerResponse.setCampaignId(customerDTO.getCampaignId());
+            customerResponse.setAgeGroup(customerDTO.getAgeGroup());
+            customerResponse.setRating(customerDTO.getRating());
             customerResponse.setCampaignName(customerDTO.getCampaignName());
             customerResponse.setId(customerDTO.getId());
             customerResponse.setFullName(customerDTO.getFullName());
@@ -288,4 +312,14 @@ public class CustomerRequestHandler {
         times.add(slots1);
         return times;
     }
+
+    public Boolean updateMobileFlag(MobileRequest mobileRequest) throws SQLException {
+        Boolean isProcessed;
+        CustomerDAO customerDAO = new CustomerDAO();
+        CampaignDAO campaignDAO = new CampaignDAO();
+        int id = campaignDAO.getId(mobileRequest.getCampaignId());
+        isProcessed = customerDAO.updateMobileFlag(mobileRequest.getMobile(),id);
+        return isProcessed;
+    }
+
 }

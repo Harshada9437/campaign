@@ -40,6 +40,8 @@ public class CampaignRequestHandler {
         campaignDTO.setIsAllowOnFull(campaignCreateRequestBO.getIsallowOnFull());
         campaignDTO.setCreatedBy(campaignCreateRequestBO.getCreatedBy());
         campaignDTO.setHeaderId(campaignCreateRequestBO.getHeaderId());
+        campaignDTO.setCampaignLocation(campaignCreateRequestBO.getCampaignLocation());
+        campaignDTO.setIsPromoCampaign(campaignCreateRequestBO.getIsPromoCampaign());
         return campaignDTO;
     }
 
@@ -49,7 +51,9 @@ public class CampaignRequestHandler {
         List<CampaignDTO> campaignDTOS = campaignDAO.getCampaigns(campaignAdmin);
 
         for (CampaignDTO campaignDTO : campaignDTOS) {
-            CampaignResponse campaignResponse = new CampaignResponse(campaignDTO.getStatus(),
+            CampaignResponse campaignResponse = new CampaignResponse(campaignDTO.getCampaignLocation(),
+                    campaignDTO.getStatus(),
+                    campaignDTO.getIsPromoCampaign(),
                     campaignDTO.getIsPublished(),
                     campaignDTO.getEmailSubject(),
                     campaignDTO.getLinkHashId(),
@@ -78,7 +82,9 @@ public class CampaignRequestHandler {
     public CampaignInfoResponse getCampaignInfo(String campaignId) throws SQLException, CampaignNotFoundException {
         CampaignDAO campaignDAO = new CampaignDAO();
         CampaignDTO campaignDTO = campaignDAO.getCampaignInfo(campaignId);
-        CampaignInfoResponse getCampaignResponse = new CampaignInfoResponse(campaignDTO.getStatus(),
+        CampaignInfoResponse getCampaignResponse = new CampaignInfoResponse(campaignDTO.getCampaignLocation(),
+                campaignDTO.getIsPromoCampaign(),
+                campaignDTO.getStatus(),
                 campaignDTO.getLinkHashId(),
                 campaignDTO.getEmailSubject(),
                 campaignDTO.getId(),
@@ -103,7 +109,7 @@ public class CampaignRequestHandler {
     public Boolean updateCampaign(CampaignUpdateRequestBO campaignUpdateRequestBO) throws SQLException {
         CampaignDAO campaignDAO = new CampaignDAO();
         Boolean isProcessed = campaignDAO.updateCampaign(buildUpdateDtoFromBO(campaignUpdateRequestBO));
-        List<String> newDates = new ArrayList<String>();
+       /* List<String> newDates = new ArrayList<String>();
         List<String> dates = campaignDAO.getDates(campaignUpdateRequestBO.getId());
         List<String> removedDates = new ArrayList<String>();
         List<SlotDetails> newSlots = new ArrayList<SlotDetails>();
@@ -181,7 +187,7 @@ public class CampaignRequestHandler {
                 e.printStackTrace();
             }
         }
-
+*/
 
         return isProcessed;
     }
@@ -189,6 +195,8 @@ public class CampaignRequestHandler {
     private CampaignDTO buildUpdateDtoFromBO(CampaignUpdateRequestBO campaignUpdateRequestBO) {
         CampaignDTO campaignDTO = new CampaignDTO();
         campaignDTO.setId(campaignUpdateRequestBO.getId());
+        campaignDTO.setIsPromoCampaign(campaignUpdateRequestBO.getIsPromoCampaign());
+        campaignDTO.setCampaignLocation(campaignUpdateRequestBO.getCampaignLocation());
         campaignDTO.setHeaderId(campaignUpdateRequestBO.getHeaderId());
         campaignDTO.setIsPublished(campaignUpdateRequestBO.getIsPublished());
         campaignDTO.setName(campaignUpdateRequestBO.getName());
@@ -209,11 +217,13 @@ public class CampaignRequestHandler {
         CampaignDAO campaignDAO = new CampaignDAO();
         CampaignDTO campaignDTO;
         if(id!=0) {
-             campaignDTO = campaignDAO.getCampaign(id);
+             campaignDTO = campaignDAO.getCampaignInfoById(id);
         }else{
             campaignDTO= campaignDAO.getCampaignInfo(campaignId);
         }
-        GetCampaignResponse getCampaignResponse = new GetCampaignResponse(campaignDTO.getStatus(),
+        GetCampaignResponse getCampaignResponse = new GetCampaignResponse(campaignDTO.getCampaignLocation(),
+                campaignDTO.getIsPromoCampaign(),
+                campaignDTO.getStatus(),
                 campaignDTO.getLinkHashId(),
                 campaignDTO.getEmailSubject(),
                 campaignDTO.getId(),

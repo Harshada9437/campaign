@@ -10,7 +10,7 @@ import java.util.Properties;
 
 public class EmailService {
 
-    public static Boolean newRegistration(String sub, String body, String to, String name, String date, String time, int persons, final SmtpDetails smtpDetails, String s) {
+    public static Boolean newRegistration(String coupon,int val,String sub, String body, String to, String name, String date, String time, int persons, final SmtpDetails smtpDetails, String s) {
         Boolean isProcessed = Boolean.FALSE;
 
         // Get system properties
@@ -25,18 +25,9 @@ public class EmailService {
         props.put(MAIL_SMTP_WRITETIMEOUT, MAIL_SOCKET_TIMEOUT);
 
         props.put("mail.smtp.host", smtpDetails.getHost());
-       /* props.put("mail.smtp.socketFactory.port", smtpDetails.getPort());
-        props.put("mail.smtp.socketFactory.class",
-                "javax.net.ssl.SSLSocketFactory");
-*/
         props.put("mail.smtp.auth", "true");
         props.put("mail.smtp.port", smtpDetails.getPort());
         props.put("mail.smtp.starttls.enable", "true"); //enable STARTTLS
-       // props.setProperty("mail.user", smtpDetails.getEmail());
-       // props.setProperty("mail.password", smtpDetails.getPassword());
-        
-        // Setup mail server
-        //props.setProperty("mail.smtp.host", smtpDetails.getHost());
 
         // Get the default Session object.
         Session session = Session.getInstance(props,
@@ -60,7 +51,10 @@ public class EmailService {
             message.setSubject(s+" "+sub);
 
             String msg = body.replace("%n%",name);
-             msg = msg.replace("%d%",DateUtil.format(DateUtil.getTimeStampFromString(date),"dd/MM/yyyy"));
+            if(val==0) {
+                msg = msg.replace("%d%", DateUtil.format(DateUtil.getTimeStampFromString(date), "dd/MM/yyyy"));
+            }
+            msg = msg.replace("%cpn%",coupon);
              msg = msg.replace("%t%",time);
              msg = msg.replace("%np%",String.valueOf(persons));
             message.setText(msg);

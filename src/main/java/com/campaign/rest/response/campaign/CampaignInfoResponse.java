@@ -12,8 +12,10 @@ public class CampaignInfoResponse implements GenericResponse{
     private int noOfPerson;
     private int isAllowOnFull;
     private int isPublished;
+    private int isPromoCampaign;
     private HeaderDetails header;
     private String name;
+    private String campaignLocation;
     private String status;
     private String linkHashId;
     private String desc;
@@ -28,7 +30,9 @@ public class CampaignInfoResponse implements GenericResponse{
     private List<String> dates;
     private String slotFullText;
 
-    public CampaignInfoResponse(String status,String linkHashId,String emailSubject,int id,int isPublished, int createdBy, int noOfPerson, int isAllowOnFull, HeaderDetails header, String name, String desc, String confirmSms, String confirmEmail, String notifyEmail, String campaignOverText, String slotFullText) {
+    public CampaignInfoResponse(String campaignLocation,int isPromoCampaign,String status,String linkHashId,String emailSubject,int id,int isPublished, int createdBy, int noOfPerson, int isAllowOnFull, HeaderDetails header, String name, String desc, String confirmSms, String confirmEmail, String notifyEmail, String campaignOverText, String slotFullText) {
+        this.campaignLocation = campaignLocation;
+        this.isPromoCampaign = isPromoCampaign;
         this.status = status;
         this.linkHashId = linkHashId;
         this.emailSubject = emailSubject;
@@ -45,6 +49,14 @@ public class CampaignInfoResponse implements GenericResponse{
         this.notifyEmail = notifyEmail;
         this.campaignOverText = campaignOverText;
         this.slotFullText = slotFullText;
+    }
+
+    public int getIsPromoCampaign() {
+        return isPromoCampaign;
+    }
+
+    public String getCampaignLocation() {
+        return campaignLocation;
     }
 
     public String getStatus() {
@@ -153,8 +165,10 @@ public class CampaignInfoResponse implements GenericResponse{
                 ", noOfPerson=" + noOfPerson +
                 ", isAllowOnFull=" + isAllowOnFull +
                 ", isPublished=" + isPublished +
+                ", isPromoCampaign=" + isPromoCampaign +
                 ", header=" + header +
                 ", name='" + name + '\'' +
+                ", campaignLocation='" + campaignLocation + '\'' +
                 ", status='" + status + '\'' +
                 ", linkHashId='" + linkHashId + '\'' +
                 ", desc='" + desc + '\'' +

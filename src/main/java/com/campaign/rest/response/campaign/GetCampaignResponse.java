@@ -14,10 +14,12 @@ public class GetCampaignResponse implements GenericResponse{
     private int noOfPerson;
     private int isAllowOnFull;
     private int isPublished;
+    private int isPromoCampaign;
     private HeaderDetails header;
     private SmsDetails sms;
     private SmtpDetails smtp;
     private String name;
+    private String campaignLocation;
     private String status;
     private String linkHashId;
     private String desc;
@@ -32,7 +34,9 @@ public class GetCampaignResponse implements GenericResponse{
     private List<String> dates;
     private String slotFullText;
 
-    public GetCampaignResponse(String status,String linkHashId,String emailSubject,int id,int isPublished, int createdBy, int noOfPerson, int isAllowOnFull, HeaderDetails header, SmsDetails sms, SmtpDetails smtp, String name, String desc, String confirmSms, String confirmEmail, String notifyEmail, String campaignOverText, String slotFullText) {
+    public GetCampaignResponse(String campaignLocation,int isPromoCampaign,String status,String linkHashId,String emailSubject,int id,int isPublished, int createdBy, int noOfPerson, int isAllowOnFull, HeaderDetails header, SmsDetails sms, SmtpDetails smtp, String name, String desc, String confirmSms, String confirmEmail, String notifyEmail, String campaignOverText, String slotFullText) {
+        this.campaignLocation = campaignLocation;
+        this.isPromoCampaign = isPromoCampaign;
         this.status = status;
         this.linkHashId = linkHashId;
         this.emailSubject = emailSubject;
@@ -51,6 +55,14 @@ public class GetCampaignResponse implements GenericResponse{
         this.notifyEmail = notifyEmail;
         this.campaignOverText = campaignOverText;
         this.slotFullText = slotFullText;
+    }
+
+    public int getIsPromoCampaign() {
+        return isPromoCampaign;
+    }
+
+    public String getCampaignLocation() {
+        return campaignLocation;
     }
 
     public String getStatus() {
@@ -167,10 +179,12 @@ public class GetCampaignResponse implements GenericResponse{
                 ", noOfPerson=" + noOfPerson +
                 ", isAllowOnFull=" + isAllowOnFull +
                 ", isPublished=" + isPublished +
+                ", isPromoCampaign=" + isPromoCampaign +
                 ", header=" + header +
                 ", sms=" + sms +
                 ", smtp=" + smtp +
                 ", name='" + name + '\'' +
+                ", campaignLocation='" + campaignLocation + '\'' +
                 ", status='" + status + '\'' +
                 ", linkHashId='" + linkHashId + '\'' +
                 ", desc='" + desc + '\'' +

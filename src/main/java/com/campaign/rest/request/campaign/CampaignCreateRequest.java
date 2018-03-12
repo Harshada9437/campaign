@@ -7,8 +7,10 @@ public class CampaignCreateRequest {
    private int noOfPerson;
    private int isallowOnFull;
    private int headerId;
+   private int isPromoCampaign;
    private int isPublished;
    private String name;
+   private String campaignLocation;
    private String emailSubject;
    private String desc;
    private String confirmSms;
@@ -18,6 +20,22 @@ public class CampaignCreateRequest {
    private String slotFullText;
    private List<SlotDetails> slots;
    private List<String> dates;
+
+   public int getIsPromoCampaign() {
+      return isPromoCampaign;
+   }
+
+   public void setIsPromoCampaign(int isPromoCampaign) {
+      this.isPromoCampaign = isPromoCampaign;
+   }
+
+   public String getCampaignLocation() {
+      return campaignLocation;
+   }
+
+   public void setCampaignLocation(String campaignLocation) {
+      this.campaignLocation = campaignLocation;
+   }
 
    public String getEmailSubject() {
       return emailSubject;
@@ -149,10 +167,12 @@ public class CampaignCreateRequest {
       if (createdBy != that.createdBy) return false;
       if (noOfPerson != that.noOfPerson) return false;
       if (isallowOnFull != that.isallowOnFull) return false;
+      if (isPromoCampaign != that.isPromoCampaign) return false;
       if (headerId != that.headerId) return false;
       if (isPublished != that.isPublished) return false;
       if (name != null ? !name.equals(that.name) : that.name != null) return false;
       if (emailSubject != null ? !emailSubject.equals(that.emailSubject) : that.emailSubject != null) return false;
+      if (campaignLocation != null ? !campaignLocation.equals(that.campaignLocation) : that.campaignLocation != null) return false;
       if (desc != null ? !desc.equals(that.desc) : that.desc != null) return false;
       if (confirmSms != null ? !confirmSms.equals(that.confirmSms) : that.confirmSms != null) return false;
       if (confirmEmail != null ? !confirmEmail.equals(that.confirmEmail) : that.confirmEmail != null) return false;
@@ -171,6 +191,8 @@ public class CampaignCreateRequest {
       result = 31 * result + isallowOnFull;
       result = 31 * result + headerId;
       result = 31 * result + isPublished;
+      result = 31 * result + isPromoCampaign;
+      result = 31 * result + (campaignLocation != null ? campaignLocation.hashCode() : 0);
       result = 31 * result + (name != null ? name.hashCode() : 0);
       result = 31 * result + (emailSubject != null ? emailSubject.hashCode() : 0);
       result = 31 * result + (desc != null ? desc.hashCode() : 0);
@@ -189,10 +211,12 @@ public class CampaignCreateRequest {
       return "CampaignCreateRequest{" +
               "createdBy=" + createdBy +
               ", noOfPerson=" + noOfPerson +
+              ", isPromoCampaign=" + isPromoCampaign +
               ", isallowOnFull=" + isallowOnFull +
               ", headerId=" + headerId +
               ", isPublished=" + isPublished +
               ", name='" + name + '\'' +
+              ", campaignLocation='" + campaignLocation + '\'' +
               ", emailSubject='" + emailSubject + '\'' +
               ", desc='" + desc + '\'' +
               ", confirmSms='" + confirmSms + '\'' +

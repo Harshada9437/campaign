@@ -13,11 +13,13 @@ public class CampaignResponse {
     private int noOfPerson;
     private int isAllowOnFull;
     private int isPublished;
+    private int isPromoCampaign;
     private HeaderDetails header;
     private SmsDetails sms;
     private SmtpDetails smtp;
     private String name;
     private String status;
+    private String campaignLocation;
     private String desc;
     private String linkHashId;
     private String confirmSms;
@@ -29,8 +31,10 @@ public class CampaignResponse {
     private String slotFullText;
     private String emailSubject;
 
-    public CampaignResponse(String status,int isPublished,String emailSubject,String linkHashId,int id, int createdBy, int noOfPerson, int isAllowOnFull, HeaderDetails header, SmsDetails sms, SmtpDetails smtp, String name, String desc, String confirmSms, String confirmEmail, String notifyEmail, String campaignOverText, String slotFullText) {
+    public CampaignResponse(String campaignLocation,String status,int isPromoCampaign,int isPublished,String emailSubject,String linkHashId,int id, int createdBy, int noOfPerson, int isAllowOnFull, HeaderDetails header, SmsDetails sms, SmtpDetails smtp, String name, String desc, String confirmSms, String confirmEmail, String notifyEmail, String campaignOverText, String slotFullText) {
+        this.campaignLocation = campaignLocation;
         this.status = status;
+        this.isPromoCampaign = isPromoCampaign;
         this.isPublished = isPublished;
         this.emailSubject = emailSubject;
         this.linkHashId = linkHashId;
@@ -48,6 +52,14 @@ public class CampaignResponse {
         this.notifyEmail = notifyEmail;
         this.campaignOverText = campaignOverText;
         this.slotFullText = slotFullText;
+    }
+
+    public int getIsPromoCampaign() {
+        return isPromoCampaign;
+    }
+
+    public String getCampaignLocation() {
+        return campaignLocation;
     }
 
     public String getStatus() {
@@ -146,11 +158,13 @@ public class CampaignResponse {
                 ", noOfPerson=" + noOfPerson +
                 ", isAllowOnFull=" + isAllowOnFull +
                 ", isPublished=" + isPublished +
+                ", isPromoCampaign=" + isPromoCampaign +
                 ", header=" + header +
                 ", sms=" + sms +
                 ", smtp=" + smtp +
                 ", name='" + name + '\'' +
                 ", status='" + status + '\'' +
+                ", campaignLocation='" + campaignLocation + '\'' +
                 ", desc='" + desc + '\'' +
                 ", linkHashId='" + linkHashId + '\'' +
                 ", confirmSms='" + confirmSms + '\'' +

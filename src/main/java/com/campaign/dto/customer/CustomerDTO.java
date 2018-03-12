@@ -19,10 +19,28 @@ public class CustomerDTO {
     private String resource;
     private int noOfPerson;
     private int id;
+    private int rating;
     private int isConfirmed;
     private int campaignId;
     private String isAvailable;
+    private String ageGroup;
     private List<CouponResponse> availableSlots;
+
+    public int getRating() {
+        return rating;
+    }
+
+    public void setRating(int rating) {
+        this.rating = rating;
+    }
+
+    public String getAgeGroup() {
+        return ageGroup;
+    }
+
+    public void setAgeGroup(String ageGroup) {
+        this.ageGroup = ageGroup;
+    }
 
     public int getIsConfirmed() {
         return isConfirmed;
@@ -176,10 +194,12 @@ public class CustomerDTO {
         CustomerDTO that = (CustomerDTO) o;
 
         if (noOfPerson != that.noOfPerson) return false;
+        if (rating != that.rating) return false;
         if (id != that.id) return false;
         if (isConfirmed != that.isConfirmed) return false;
         if (campaignId != that.campaignId) return false;
         if (fullName != null ? !fullName.equals(that.fullName) : that.fullName != null) return false;
+        if (ageGroup != null ? !ageGroup.equals(that.ageGroup) : that.ageGroup != null) return false;
         if (campaignName != null ? !campaignName.equals(that.campaignName) : that.campaignName != null) return false;
         if (email != null ? !email.equals(that.email) : that.email != null) return false;
         if (date != null ? !date.equals(that.date) : that.date != null) return false;
@@ -199,6 +219,7 @@ public class CustomerDTO {
     public int hashCode() {
         int result = fullName != null ? fullName.hashCode() : 0;
         result = 31 * result + (campaignName != null ? campaignName.hashCode() : 0);
+        result = 31 * result + (ageGroup != null ? ageGroup.hashCode() : 0);
         result = 31 * result + (email != null ? email.hashCode() : 0);
         result = 31 * result + (date != null ? date.hashCode() : 0);
         result = 31 * result + (timeSlot != null ? timeSlot.hashCode() : 0);
@@ -212,6 +233,7 @@ public class CustomerDTO {
         result = 31 * result + noOfPerson;
         result = 31 * result + id;
         result = 31 * result + isConfirmed;
+        result = 31 * result + rating;
         result = 31 * result + campaignId;
         result = 31 * result + (isAvailable != null ? isAvailable.hashCode() : 0);
         result = 31 * result + (availableSlots != null ? availableSlots.hashCode() : 0);
@@ -235,9 +257,11 @@ public class CustomerDTO {
                 ", resource='" + resource + '\'' +
                 ", noOfPerson=" + noOfPerson +
                 ", id=" + id +
+                ", rating=" + rating +
                 ", isConfirmed=" + isConfirmed +
                 ", campaignId=" + campaignId +
                 ", isAvailable='" + isAvailable + '\'' +
+                ", ageGroup='" + ageGroup + '\'' +
                 ", availableSlots=" + availableSlots +
                 '}';
     }

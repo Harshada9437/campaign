@@ -20,7 +20,7 @@ public class ConfigProperties {
     static {
         try {
 
-            app_path = new File(System.getProperty("catalina.home") + "/webapps").getAbsolutePath();
+            app_path = new File(System.getProperty("catalina.home") + "/barbeq_webapps").getAbsolutePath();
             Properties prop = new Properties();
             File propertyFile = new File(app_path + "/campaign.properties");
             prop.load(new FileInputStream(propertyFile));

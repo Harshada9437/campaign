@@ -3,6 +3,7 @@ package com.campaign.bo.request;
 public class OtpRequestBO {
     private String fullName;
     private String email;
+    private String ageGroup;
     private String date;
     private String timeSlot;
     private String mobile;
@@ -12,7 +13,33 @@ public class OtpRequestBO {
     private String dob;
     private String resource;
     private int noOfPerson;
+    private int rating;
+    private int isSpecialCampaign;
     private String campaignId;
+
+    public String getAgeGroup() {
+        return ageGroup;
+    }
+
+    public void setAgeGroup(String ageGroup) {
+        this.ageGroup = ageGroup;
+    }
+
+    public int getRating() {
+        return rating;
+    }
+
+    public void setRating(int rating) {
+        this.rating = rating;
+    }
+
+    public int getIsSpecialCampaign() {
+        return isSpecialCampaign;
+    }
+
+    public void setIsSpecialCampaign(int isSpecialCampaign) {
+        this.isSpecialCampaign = isSpecialCampaign;
+    }
 
     public String getCampaignId() {
         return campaignId;
@@ -118,6 +145,9 @@ public class OtpRequestBO {
         OtpRequestBO that = (OtpRequestBO) o;
 
         if (noOfPerson != that.noOfPerson) return false;
+        if (rating != that.rating) return false;
+        if (isSpecialCampaign != that.isSpecialCampaign) return false;
+        if (ageGroup != null ? !ageGroup.equals(that.ageGroup) : that.ageGroup != null) return false;
         if (fullName != null ? !fullName.equals(that.fullName) : that.fullName != null) return false;
         if (email != null ? !email.equals(that.email) : that.email != null) return false;
         if (date != null ? !date.equals(that.date) : that.date != null) return false;
@@ -135,6 +165,7 @@ public class OtpRequestBO {
     public int hashCode() {
         int result = fullName != null ? fullName.hashCode() : 0;
         result = 31 * result + (email != null ? email.hashCode() : 0);
+        result = 31 * result + (ageGroup != null ? ageGroup.hashCode() : 0);
         result = 31 * result + (date != null ? date.hashCode() : 0);
         result = 31 * result + (timeSlot != null ? timeSlot.hashCode() : 0);
         result = 31 * result + (mobile != null ? mobile.hashCode() : 0);
@@ -144,6 +175,8 @@ public class OtpRequestBO {
         result = 31 * result + (dob != null ? dob.hashCode() : 0);
         result = 31 * result + (resource != null ? resource.hashCode() : 0);
         result = 31 * result + noOfPerson;
+        result = 31 * result + rating;
+        result = 31 * result + isSpecialCampaign;
         result = 31 * result + (campaignId != null ? campaignId.hashCode() : 0);
         return result;
     }
@@ -153,6 +186,7 @@ public class OtpRequestBO {
         return "OtpRequestBO{" +
                 "fullName='" + fullName + '\'' +
                 ", email='" + email + '\'' +
+                ", ageGroup='" + ageGroup + '\'' +
                 ", date='" + date + '\'' +
                 ", timeSlot='" + timeSlot + '\'' +
                 ", mobile='" + mobile + '\'' +
@@ -162,6 +196,8 @@ public class OtpRequestBO {
                 ", dob='" + dob + '\'' +
                 ", resource='" + resource + '\'' +
                 ", noOfPerson=" + noOfPerson +
+                ", rating=" + rating +
+                ", isSpecialCampaign=" + isSpecialCampaign +
                 ", campaignId='" + campaignId + '\'' +
                 '}';
     }

@@ -1,13 +1,12 @@
 package com.campaign.dao;
 
 import com.campaign.Exception.CustomerNotFoundException;
-import com.campaign.bo.request.OtpRequestBO;
-import com.campaign.bo.request.RegisterBo;
 import com.campaign.dao.UtilClasses.ConnectionHandler;
 import com.campaign.dto.customer.CustomerDTO;
 import com.campaign.dto.customer.RegisterDto;
 import com.campaign.dto.customer.UpdateSlotDTO;
 import com.campaign.dto.customer.VerifyOtpDTO;
+import com.campaign.rest.request.customer.MobileRequest;
 import com.campaign.rest.response.campaign.CouponResponse;
 
 import java.sql.*;
@@ -122,7 +121,7 @@ public class CustomerDAO {
     public synchronized Integer insertUser(RegisterDto registerDto) throws SQLException {
         PreparedStatement preparedStatement = null;
         Connection connection = null;
-        StringBuilder query = new StringBuilder("INSERT INTO customer_details(campaign_master_id,name,date,time_slot,resource,no_of_person,remark,gender,dob,locality,email,mobile) values (?,?,?,?,?,?,?,?,?,?,?,?)");
+        StringBuilder query = new StringBuilder("INSERT INTO customer_details(rating,age_group,campaign_master_id,name,date,time_slot,resource,no_of_person,remark,gender,dob,locality,email,mobile) values (?,?,?,?,?,?,?,?,?,?,?,?,?,?)");
         Integer id = 0;
         try {
             int parameterIndex = 1;
@@ -130,6 +129,8 @@ public class CustomerDAO {
             connection.setAutoCommit(false);
             preparedStatement = connection
                     .prepareStatement(query.toString());
+            preparedStatement.setInt(parameterIndex++, registerDto.getRating());
+            preparedStatement.setString(parameterIndex++, registerDto.getAgeGroup());
             preparedStatement.setInt(parameterIndex++, registerDto.getCampaignId());
             preparedStatement.setString(parameterIndex++, registerDto.getFullName());
             preparedStatement.setString(parameterIndex++, registerDto.getDate());
@@ -193,6 +194,8 @@ public class CustomerDAO {
             int i = 0;
             while (resultSet.next()) {
                 customerDTO.setId(resultSet.getInt("id"));
+                customerDTO.setIsConfirmed(resultSet.getInt("isConfirmed"));
+                customerDTO.setCampaignId(resultSet.getInt("campaign_master_id"));
                 customerDTO.setDate(resultSet.getString("date"));
                 customerDTO.setGender(resultSet.getString("gender"));
                 customerDTO.setTimeSlot(resultSet.getString("time_slot"));
@@ -239,9 +242,11 @@ public class CustomerDAO {
             while (resultSet.next()) {
                 CustomerDTO customerDTO = new CustomerDTO();
                 customerDTO.setId(resultSet.getInt("id"));
+                customerDTO.setRating(resultSet.getInt("rating"));
                 customerDTO.setIsConfirmed(resultSet.getInt("isConfirmed"));
                 customerDTO.setCampaignId(resultSet.getInt("campaign_id"));
                 customerDTO.setCampaignName(resultSet.getString("campaign_name"));
+                customerDTO.setAgeGroup(resultSet.getString("age_group"));
                 customerDTO.setDate(resultSet.getString("date"));
                 customerDTO.setGender(resultSet.getString("gender"));
                 customerDTO.setTimeSlot(resultSet.getString("time_slot"));
@@ -578,5 +583,150 @@ public class CustomerDAO {
             }
         }
         return id;
+    }
+
+    public String getCoupon(int id,int customerId) throws SQLException {
+        Connection connection = null;
+        Statement statement = null;
+        String coupon="";
+        try {
+            connection = new ConnectionHandler().getConnection();
+            connection.setAutoCommit(false);
+            statement = connection.createStatement();
+            StringBuilder query = new StringBuilder("select coupon from customer_coupon_map where customer_id=0 and campaign_id="+id);
+            ResultSet resultSet = statement.executeQuery(query.toString());
+            while (resultSet.next()) {
+                coupon=resultSet.getString("coupon");
+                updateCoupon(coupon,customerId,connection);
+                break;
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+            throw e;
+        } finally {
+            try {
+                statement.close();
+                connection.close();
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+        }
+        return coupon;
+    }
+
+    private void updateCoupon(String coupon, int id, Connection connection) throws SQLException {
+        PreparedStatement preparedStatement = null;
+        try {
+            int parameterIndex = 1;
+            connection.setAutoCommit(false);
+            preparedStatement = connection
+                    .prepareStatement("UPDATE customer_coupon_map SET customer_id = ?  WHERE coupon=?");
+
+            preparedStatement.setInt(parameterIndex++, id);
+            preparedStatement.setString(parameterIndex++, coupon);
+
+            int i = preparedStatement.executeUpdate();
+            if (i > 0) {
+                connection.commit();
+            } else {
+                connection.rollback();
+            }
+        } catch (SQLException sqlException) {
+            sqlException.printStackTrace();
+            throw sqlException;
+        }
+    }
+
+    public boolean getCustomer(int customerId) throws SQLException {
+        Connection connection = null;
+        Statement statement = null;
+        boolean isExist=false;
+        try {
+            connection = new ConnectionHandler().getConnection();
+            statement = connection.createStatement();
+            StringBuilder query = new StringBuilder("select coupon from customer_coupon_map where customer_id="+customerId);
+            ResultSet resultSet = statement.executeQuery(query.toString());
+            while (resultSet.next()) {
+                isExist=true;
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+            throw e;
+        } finally {
+            try {
+                statement.close();
+                connection.close();
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+        }
+        return isExist;
+    }
+
+    public static boolean checkMobile(String mobile, int id) throws SQLException {
+        Connection connection = null;
+        Statement statement = null;
+        Boolean isProcessed = Boolean.FALSE;
+        try {
+
+            connection = new ConnectionHandler().getConnection();
+            statement = connection.createStatement();
+            StringBuilder query = new StringBuilder(
+                    "SELECT mobile FROM mobile_details where mobile = \"")
+                    .append(mobile).append("\" and isRegistered=0 and campaign_master_id=" + id);
+            ResultSet resultSet = statement.executeQuery(query.toString());
+
+            while (resultSet.next()) {
+
+                isProcessed = true;
+            }
+        } catch (SQLException sqlException) {
+            sqlException.printStackTrace();
+            throw sqlException;
+        } finally {
+            try {
+                statement.close();
+                connection.close();
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+        }
+        return isProcessed;
+    }
+
+    public Boolean updateMobileFlag(String mobile,int id) throws SQLException {
+        boolean isCreated = false;
+        PreparedStatement preparedStatement = null;
+        Connection connection = null;
+        try {
+            int parameterIndex = 1;
+            connection = new ConnectionHandler().getConnection();
+            connection.setAutoCommit(false);
+            preparedStatement = connection
+                    .prepareStatement("UPDATE mobile_details SET  isRegistered =1 WHERE mobile =? and campaign_master_id =?");
+
+
+            preparedStatement.setString(parameterIndex++, mobile);
+            preparedStatement.setInt(parameterIndex++, id);
+
+            int i = preparedStatement.executeUpdate();
+            if (i > 0) {
+                connection.commit();
+                isCreated = Boolean.TRUE;
+            } else {
+                connection.rollback();
+            }
+        } catch (SQLException sqlException) {
+            sqlException.printStackTrace();
+            throw sqlException;
+        } finally {
+            try {
+                connection.close();
+                preparedStatement.close();
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+        }
+        return isCreated;
     }
 }

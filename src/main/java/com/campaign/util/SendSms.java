@@ -75,17 +75,18 @@ public class SendSms {
         return sendSMS(mobiles, message, smsDetails);
     }
 
-    public Boolean newRegistration(String name,String date,String time,String mobile,int persons, SmsDetails smsDetails,String msg,String isPublished) {
-        String person,details;
+    public Boolean newRegistration(String coupon,int val,String name,String date,String time,String mobile,int persons, SmsDetails smsDetails,String msg,String isPublished) {
+        String person,details="";
         if(persons-1>0){
            person="+"+ (persons-1);
         }else
         {
             person="";
-        }
-        details =  name+person+", "+DateUtil.format(DateUtil.getTimeStampFromString(date),"dd/MM/yyyy")+", "+time;
-        String message = msg.replace("%cd%",details);
+        }if(val==0) {
+            details = name + person + ", " + DateUtil.format(DateUtil.getTimeStampFromString(date), "dd/MM/yyyy") + ", " + time;
+        } String message = msg.replace("%cd%",details);
         message = message.replace("%n%",name);
+        message = message.replace("%cpn%",coupon);
         return sendSMS(mobile, isPublished+message, smsDetails);
     }
 }

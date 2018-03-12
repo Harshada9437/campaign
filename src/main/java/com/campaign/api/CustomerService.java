@@ -1,15 +1,11 @@
 package com.campaign.api;
 
 import com.campaign.Exception.CustomerNotFoundException;
-import com.campaign.bo.request.OtpRequestBO;
-import com.campaign.bo.request.RegisterBo;
-import com.campaign.bo.request.UpdateSlotRequestBO;
-import com.campaign.bo.request.VerifyOtpRequestBO;
+import com.campaign.bo.request.*;
 import com.campaign.dao.CampaignDAO;
 import com.campaign.dao.CustomerDAO;
 import com.campaign.dto.campaign.CampaignDTO;
 import com.campaign.dto.campaign.CampaignSlotDTO;
-import com.campaign.dto.customer.CustomerDTO;
 import com.campaign.requestHandlers.CustomerRequestHandler;
 import com.campaign.rest.request.VerifyOtpRequest;
 import com.campaign.rest.request.customer.*;
@@ -17,8 +13,8 @@ import com.campaign.rest.response.customer.CustomerListResponse;
 import com.campaign.rest.response.customer.GetCustomerResponse;
 import com.campaign.rest.response.util.MessageResponse;
 import com.campaign.rest.response.util.ResponseGenerator;
+import com.campaign.util.UserRequestValidation;
 
-import javax.mail.MessagingException;
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
@@ -37,6 +33,7 @@ public class CustomerService {
     public Response createAppUser(RegisterRequest registerRequest) {
         RegisterBo registerBO = new RegisterBo();
 
+        registerBO.setIsSpecialCampaign(registerRequest.getIsSpecialCampaign());
         registerBO.setToken(registerRequest.getToken());
         registerBO.setFullName(registerRequest.getFullName());
         registerBO.setCampaignId(registerRequest.getCampaignId());
@@ -64,19 +61,28 @@ public class CustomerService {
             String token = CustomerDAO.getToken(registerBO.getMobile());
             if (campaignSlotDTO.getStatus().equals("A")) {
                 if (token.equals(registerBO.getToken())) {
-                    if (campaignSlotDTO.isAvailable()) {
-                        if (currentCapacity > 0) {
-                            if (registerBO.getNoOfPerson() <= currentCapacity) {
-                                customerRequestHandler.register(registerBO);
-                                return ResponseGenerator.generateSuccessResponse(messageResponse, "Your registration has been confirmed.");
+                    if (registerBO.getIsSpecialCampaign() == 0) {
+                        if (campaignSlotDTO.isAvailable()) {
+                            if (currentCapacity > 0) {
+                                if (registerBO.getNoOfPerson() <= currentCapacity) {
+                                    customerRequestHandler.register(registerBO);
+                                    return ResponseGenerator.generateSuccessResponse(messageResponse, "Your registration has been confirmed.");
+                                } else {
+                                    return ResponseGenerator.generateFailureResponse(messageResponse, "Only " + currentCapacity + " person(s) capacity left for this time slot");
+                                }
                             } else {
-                                return ResponseGenerator.generateFailureResponse(messageResponse, "Only " + currentCapacity + " person(s) capacity left for this time slot");
+                                return ResponseGenerator.generateFailureResponse(messageResponse, "SLOTISFULL-" + registerBO.getCustomerId());
                             }
                         } else {
-                            return ResponseGenerator.generateFailureResponse(messageResponse, "SLOTISFULL-" + registerBO.getCustomerId());
+                            return ResponseGenerator.generateFailureResponse(messageResponse, "WaitListed");
                         }
                     } else {
-                        return ResponseGenerator.generateFailureResponse(messageResponse, "WaitListed");
+                            String coupon=customerRequestHandler.register(registerBO);
+                        if(!coupon.equals("")) {
+                            return ResponseGenerator.generateSuccessResponse(messageResponse, coupon);
+                        }else{
+                            return ResponseGenerator.generateFailureResponse(messageResponse,"Yo have already registered.");
+                        }
                     }
                 } else {
                     return ResponseGenerator.generateFailureResponse(messageResponse, "Invalid customer.");
@@ -151,20 +157,45 @@ public class CustomerService {
         }
     }
 
+    @POST
+    @Path("/checkForMobile")
+    @Consumes(MediaType.APPLICATION_JSON)
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response checkMobile(MobileRequest mobileRequest ) {
+
+        CustomerRequestHandler customerRequestHandler = new CustomerRequestHandler();
+        MessageResponse messageResponse = new MessageResponse();
+        try {
+            if (customerRequestHandler.checkMobile(mobileRequest)) {
+                customerRequestHandler.updateMobileFlag(mobileRequest);
+                return ResponseGenerator.generateSuccessResponse(messageResponse, "SUCCESS");
+            } else {
+                return ResponseGenerator.generateFailureResponse(messageResponse, "NotExist");
+            }
+        }catch (Exception e) {
+            e.printStackTrace();
+            return ResponseGenerator.generateFailureResponse(messageResponse, "Something went wrong please try again.");
+        }
+    }
+
     @GET
     @Path("/list/{campaign_id}")
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
-    public Response getCustomerList(@PathParam("campaign_id") int campaignId) {
+    public Response getCustomerList(@PathParam("campaign_id") int campaignId, @HeaderParam("Auth") String auth) {
         CustomerRequestHandler customerRequestHandler = new CustomerRequestHandler();
         CustomerListResponse customerListResponse = new CustomerListResponse();
         MessageResponse messageResponse = new MessageResponse();
         try {
-            customerListResponse.setCustomers(customerRequestHandler.getCustomers(campaignId));
-            return ResponseGenerator.generateSuccessResponse(customerListResponse, "List of registered customers.");
+            if (auth != null && UserRequestValidation.isRequestValid(auth)) {
+                customerListResponse.setCustomers(customerRequestHandler.getCustomers(campaignId));
+                return ResponseGenerator.generateSuccessResponse(customerListResponse, "List of registered customers.");
+            } else {
+                return ResponseGenerator.generateResponse(UserRequestValidation.getUnautheticatedResponse());
+            }
         } catch (Exception e) {
             e.printStackTrace();
-            return ResponseGenerator.generateFailureResponse(messageResponse, "Failed to retrieve. ");
+            return ResponseGenerator.generateFailureResponse(messageResponse, "something went wrong while processing.");
         }
     }
 
@@ -210,6 +241,9 @@ public class CustomerService {
         MessageResponse messageResponse = new MessageResponse();
 
         try {
+            registerBO.setIsSpecialCampaign(registerRequest.getIsSpecialCampaign());
+            registerBO.setAgeGroup(registerRequest.getAgeGroup());
+            registerBO.setRating(registerRequest.getRating());
             registerBO.setFullName(registerRequest.getFullName());
             registerBO.setCampaignId(registerRequest.getCampaignId());
             registerBO.setEmail(registerRequest.getEmail());
@@ -229,20 +263,26 @@ public class CustomerService {
             if (campaignDAO.getStatus(registerBO.getCampaignId()).equals("A")) {
                 if (!customerRequestHandler.verifyEmail(registerBO.getEmail(), campaignDTO.getId())) {
                     if (!customerRequestHandler.verifyPhoneNumber(registerBO.getMobile(), campaignDTO.getId())) {
-                        int currentCapacity = customerDAO.getConut(registerBO.getTimeSlot(), registerBO.getDate(), campaignDTO.getId());
-                        if (registerBO.getNoOfPerson() <= currentCapacity) {
-                            int id = customerRequestHandler.generateOtp(registerBO, campaignDTO);
-                            return ResponseGenerator.generateSuccessResponse(messageResponse, String.valueOf(id));
-                        } else {
-                            if (currentCapacity == 0 && campaignDTO.getIsAllowOnFull() == 1) {
+
+                        if (registerBO.getIsSpecialCampaign() == 0) {
+                            int currentCapacity = customerDAO.getConut(registerBO.getTimeSlot(), registerBO.getDate(), campaignDTO.getId());
+                            if (registerBO.getNoOfPerson() <= currentCapacity) {
                                 int id = customerRequestHandler.generateOtp(registerBO, campaignDTO);
                                 return ResponseGenerator.generateSuccessResponse(messageResponse, String.valueOf(id));
-                            }
-                            if (currentCapacity == 1) {
-                                return ResponseGenerator.generateFailureResponse(messageResponse, "Only 1 person capacity left for this time slot");
                             } else {
-                                return ResponseGenerator.generateFailureResponse(messageResponse, "Only " + currentCapacity + " persons capacity left for this time slot");
+                                if (currentCapacity == 0 && campaignDTO.getIsAllowOnFull() == 1) {
+                                    int id = customerRequestHandler.generateOtp(registerBO, campaignDTO);
+                                    return ResponseGenerator.generateSuccessResponse(messageResponse, String.valueOf(id));
+                                }
+                                if (currentCapacity == 1) {
+                                    return ResponseGenerator.generateFailureResponse(messageResponse, "Only 1 person capacity left for this time slot");
+                                } else {
+                                    return ResponseGenerator.generateFailureResponse(messageResponse, "Only " + currentCapacity + " persons capacity left for this time slot");
+                                }
                             }
+                        } else {
+                            int id = customerRequestHandler.generateOtp(registerBO, campaignDTO);
+                            return ResponseGenerator.generateSuccessResponse(messageResponse, String.valueOf(id));
                         }
                     } else {
                         return ResponseGenerator.generateFailureResponse(messageResponse, "Mobile number already exists.");

@@ -10,6 +10,7 @@ public class RegisterDto
 {
     private String fullName;
     private String email;
+    private String ageGroup;
     private String date;
     private String timeSlot;
     private String mobile;
@@ -21,6 +22,23 @@ public class RegisterDto
     private String resource;
     private int noOfPerson;
     private int campaignId;
+    private int rating;
+
+    public String getAgeGroup() {
+        return ageGroup;
+    }
+
+    public void setAgeGroup(String ageGroup) {
+        this.ageGroup = ageGroup;
+    }
+
+    public int getRating() {
+        return rating;
+    }
+
+    public void setRating(int rating) {
+        this.rating = rating;
+    }
 
     public int getCampaignId() {
         return campaignId;
@@ -127,6 +145,8 @@ public class RegisterDto
 
         if (noOfPerson != that.noOfPerson) return false;
         if (campaignId != that.campaignId) return false;
+        if (rating != that.rating) return false;
+        if (ageGroup != null ? !ageGroup.equals(that.ageGroup) : that.ageGroup != null) return false;
         if (fullName != null ? !fullName.equals(that.fullName) : that.fullName != null) return false;
         if (email != null ? !email.equals(that.email) : that.email != null) return false;
         if (date != null ? !date.equals(that.date) : that.date != null) return false;
@@ -144,6 +164,7 @@ public class RegisterDto
     public int hashCode() {
         int result = fullName != null ? fullName.hashCode() : 0;
         result = 31 * result + (email != null ? email.hashCode() : 0);
+        result = 31 * result + (ageGroup != null ? ageGroup.hashCode() : 0);
         result = 31 * result + (date != null ? date.hashCode() : 0);
         result = 31 * result + (timeSlot != null ? timeSlot.hashCode() : 0);
         result = 31 * result + (mobile != null ? mobile.hashCode() : 0);
@@ -154,6 +175,7 @@ public class RegisterDto
         result = 31 * result + (dob != null ? dob.hashCode() : 0);
         result = 31 * result + (resource != null ? resource.hashCode() : 0);
         result = 31 * result + noOfPerson;
+        result = 31 * result + rating;
         result = 31 * result + campaignId;
         return result;
     }
@@ -163,6 +185,7 @@ public class RegisterDto
         return "RegisterDto{" +
                 "fullName='" + fullName + '\'' +
                 ", email='" + email + '\'' +
+                ", ageGroup='" + ageGroup + '\'' +
                 ", date='" + date + '\'' +
                 ", timeSlot='" + timeSlot + '\'' +
                 ", mobile='" + mobile + '\'' +
@@ -173,6 +196,7 @@ public class RegisterDto
                 ", dob='" + dob + '\'' +
                 ", resource='" + resource + '\'' +
                 ", noOfPerson=" + noOfPerson +
+                ", rating=" + rating +
                 ", campaignId=" + campaignId +
                 '}';
     }
