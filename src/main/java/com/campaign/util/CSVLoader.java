@@ -4,16 +4,18 @@ import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
+import java.util.List;
+import java.util.regex.Pattern;
 
 import org.apache.commons.lang.StringUtils;
 
 import au.com.bytecode.opencsv.CSVReader;
 
 /**
- *
  * @author viralpatel.net
- *
  */
 public class CSVLoader {
 
@@ -30,6 +32,7 @@ public class CSVLoader {
      * Public constructor to build CSVLoader object with
      * Connection details. The connection is closed on success
      * or failure.
+     *
      * @param connection
      */
     public CSVLoader(Connection connection) {
@@ -41,17 +44,18 @@ public class CSVLoader {
     /**
      * Parse CSV file using OpenCSV library and load in
      * given database table.
-     * @param csvFile Input CSV file
-     * @param tableName Database table name to import data
+     *
+     * @param csvFile            Input CSV file
+     * @param tableName          Database table name to import data
      * @param truncateBeforeLoad Truncate the table before inserting
-     * 			new records.
+     *                           new records.
      * @throws Exception
      */
     public void loadCSV(String csvFile, String tableName,
-                        boolean truncateBeforeLoad) throws Exception {
+                        boolean truncateBeforeLoad,int id,int len) throws Exception {
 
         CSVReader csvReader = null;
-        if(null == this.connection) {
+        if (null == this.connection) {
             throw new Exception("Not a valid connection.");
         }
         try {
@@ -65,6 +69,18 @@ public class CSVLoader {
         }
 
         String[] headerRow = csvReader.readNext();
+        List<String> list = new ArrayList<String>();
+
+        list.addAll(Arrays.asList(headerRow));
+        list.add("campaign_id");
+
+        String [] header = new String[list.size()];
+        int i=0;
+        for (String s:list){
+            header[i]=s;
+            i++;
+        }
+
 
         if (null == headerRow) {
             throw new FileNotFoundException(
@@ -72,13 +88,13 @@ public class CSVLoader {
                             "Please check the CSV file format.");
         }
 
-        String questionmarks = StringUtils.repeat("?,", headerRow.length);
+        String questionmarks = StringUtils.repeat("?,", header.length);
         questionmarks = (String) questionmarks.subSequence(0, questionmarks
                 .length() - 1);
 
         String query = SQL_INSERT.replaceFirst(TABLE_REGEX, tableName);
         query = query
-                .replaceFirst(KEYS_REGEX, StringUtils.join(headerRow, ","));
+                .replaceFirst(KEYS_REGEX, StringUtils.join(header, ","));
         query = query.replaceFirst(VALUES_REGEX, questionmarks);
 
         System.out.println("Query: " + query);
@@ -91,7 +107,7 @@ public class CSVLoader {
             con.setAutoCommit(false);
             ps = con.prepareStatement(query);
 
-            if(truncateBeforeLoad) {
+            if (truncateBeforeLoad) {
                 //delete data from table before loading csv
                 con.createStatement().execute("DELETE FROM " + tableName);
             }
@@ -112,6 +128,7 @@ public class CSVLoader {
                             ps.setString(index++, string);
                         }
                     }
+                    ps.setInt(index,id);
                     ps.addBatch();
                 }
                 if (++count % batchSize == 0) {
@@ -130,9 +147,9 @@ public class CSVLoader {
             if (null != ps)
                 ps.close();
             if (null != con)
-                con.close();
+                //con.close();
 
-            csvReader.close();
+                csvReader.close();
         }
     }
 
@@ -143,6 +160,28 @@ public class CSVLoader {
     public void setSeprator(char seprator) {
         this.seprator = seprator;
     }
+
+    /*public void writeCsv(String path, int id) throws IOException {
+        CSVReader reader = new CSVReader(new FileReader(path), ',');
+        CSVWriter writer = new CSVWriter (new FileWriter(path));
+
+        // read line by line
+        String[] record = null;
+        String[] updatedRow = null;
+        int i = 0;
+
+        while ((record = reader.readNext()) != null) {
+            String line = record[i];
+            if (i == 0) {
+                line = line.concat(",campaign_id");
+            } else {
+                line = line.concat("," + id);
+            }
+            writer.writeNext(line);
+            i++;
+        }
+    }*/
+
 
 }
 

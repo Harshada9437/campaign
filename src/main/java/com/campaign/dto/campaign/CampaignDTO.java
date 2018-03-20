@@ -14,6 +14,8 @@ public class CampaignDTO {
     private int noOfPerson;
     private int isAllowOnFull;
     private int headerId;
+    private String mobileCsvPath;
+    private String couponCsvPath;
     private int isPromoCampaign;
     private String status;
     private String campaignLocation;
@@ -32,6 +34,22 @@ public class CampaignDTO {
     private String slotFullText;
     private List<SlotDetails> slots;
     private List<String> dates;
+
+    public String getMobileCsvPath() {
+        return mobileCsvPath;
+    }
+
+    public void setMobileCsvPath(String mobileCsvPath) {
+        this.mobileCsvPath = mobileCsvPath;
+    }
+
+    public String getCouponCsvPath() {
+        return couponCsvPath;
+    }
+
+    public void setCouponCsvPath(String couponCsvPath) {
+        this.couponCsvPath = couponCsvPath;
+    }
 
     public int getIsPromoCampaign() {
         return isPromoCampaign;
@@ -244,6 +262,8 @@ public class CampaignDTO {
         if (smtp != null ? !smtp.equals(that.smtp) : that.smtp != null) return false;
         if (name != null ? !name.equals(that.name) : that.name != null) return false;
         if (linkHashId != null ? !linkHashId.equals(that.linkHashId) : that.linkHashId != null) return false;
+        if (mobileCsvPath != null ? !mobileCsvPath.equals(that.mobileCsvPath) : that.mobileCsvPath != null) return false;
+        if (couponCsvPath != null ? !couponCsvPath.equals(that.couponCsvPath) : that.couponCsvPath != null) return false;
         if (emailSubject != null ? !emailSubject.equals(that.emailSubject) : that.emailSubject != null) return false;
         if (hashId != null ? !hashId.equals(that.hashId) : that.hashId != null) return false;
         if (desc != null ? !desc.equals(that.desc) : that.desc != null) return false;
@@ -269,6 +289,8 @@ public class CampaignDTO {
         result = 31 * result + noOfPerson;
         result = 31 * result + isAllowOnFull;
         result = 31 * result + headerId;
+        result = 31 * result + (couponCsvPath != null ? couponCsvPath.hashCode() : 0);
+        result = 31 * result + (mobileCsvPath != null ? mobileCsvPath.hashCode() : 0);
         result = 31 * result + (header != null ? header.hashCode() : 0);
         result = 31 * result + (sms != null ? sms.hashCode() : 0);
         result = 31 * result + (smtp != null ? smtp.hashCode() : 0);
@@ -294,18 +316,20 @@ public class CampaignDTO {
                 "id=" + id +
                 ", createdBy=" + createdBy +
                 ", isPublished=" + isPublished +
-                ", isPromoCampaign=" + isPromoCampaign +
                 ", noOfPerson=" + noOfPerson +
                 ", isAllowOnFull=" + isAllowOnFull +
                 ", headerId=" + headerId +
+                ", mobileCsvPath='" + mobileCsvPath + '\'' +
+                ", couponCsvPath='" + couponCsvPath + '\'' +
+                ", isPromoCampaign=" + isPromoCampaign +
+                ", status='" + status + '\'' +
+                ", campaignLocation='" + campaignLocation + '\'' +
                 ", header=" + header +
                 ", sms=" + sms +
                 ", smtp=" + smtp +
-                ", status='" + status + '\'' +
                 ", name='" + name + '\'' +
                 ", linkHashId='" + linkHashId + '\'' +
                 ", emailSubject='" + emailSubject + '\'' +
-                ", campaignLocation='" + campaignLocation + '\'' +
                 ", hashId='" + hashId + '\'' +
                 ", desc='" + desc + '\'' +
                 ", confirmSms='" + confirmSms + '\'' +

@@ -6,6 +6,7 @@ import com.campaign.dto.campaign.CampaignDTO;
 import com.campaign.dto.campaign.CampaignSlotDTO;
 import com.campaign.rest.request.campaign.HeaderDetails;
 import com.campaign.rest.request.campaign.SlotDetails;
+import com.campaign.util.CSVLoader;
 
 import java.sql.*;
 import java.util.ArrayList;
@@ -13,10 +14,10 @@ import java.util.List;
 import java.util.UUID;
 
 public class CampaignDAO {
-    public String createCampaign(CampaignDTO campaignDTO) throws SQLException {
+    public String createCampaign(CampaignDTO campaignDTO) throws Exception {
         PreparedStatement preparedStatement = null;
         Connection connection = null;
-        StringBuilder query = new StringBuilder("INSERT INTO campaign_master(isPromoCampaign,campaign_location,email_subject,is_published,name,description,no_of_person,is_allow_on_full,confirm_sms,confirm_email,notify_email,campaign_header_id,slot_full_sms,campaign_over_text,campaign_admin,link_hash_id) values (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)");
+        StringBuilder query = new StringBuilder("INSERT INTO campaign_master(isPromoCampaign,campaign_location,email_subject,is_published,name,description,no_of_person,is_allow_on_full,confirm_sms,confirm_email,notify_email,campaign_header_id,slot_full_sms,campaign_over_text,campaign_admin,link_hash_id,coupon_csv,mobile_csv) values (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)");
         String id = "";
         try {
             int parameterIndex = 1;
@@ -52,6 +53,10 @@ public class CampaignDAO {
                     campaignDTO.getCreatedBy());
             preparedStatement.setString(parameterIndex++,
                     UUID.randomUUID().toString());
+            preparedStatement.setString(parameterIndex++,
+                    campaignDTO.getCouponCsvPath());
+            preparedStatement.setString(parameterIndex++,
+                    campaignDTO.getMobileCsvPath());
 
             int i = preparedStatement.executeUpdate();
             if (i > 0) {
@@ -70,6 +75,13 @@ public class CampaignDAO {
                         }
                     }
 
+                    CSVLoader loader = new CSVLoader(connection);
+
+                   /*loader.writeCsv(campaignDTO.getCouponCsvPath(),uniqueId);
+                   loader.writeCsv(campaignDTO.getMobileCsvPath(),uniqueId);
+*/
+                    loader.loadCSV(campaignDTO.getCouponCsvPath(),"customer_coupon_map",false,uniqueId,4);
+                    loader.loadCSV(campaignDTO.getMobileCsvPath(),"mobile_details",false,uniqueId,5);
                     connection.commit();
                 } else {
                     throw new SQLException(

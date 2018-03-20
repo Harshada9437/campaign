@@ -28,10 +28,12 @@ public class CampaignService {
     @Path("/create")
     public Response createCampaign(CampaignCreateRequest campaignCreateRequest, @HeaderParam("Auth") String auth) {
         try {
-            if (auth != null && UserRequestValidation.isRequestValid(auth)) {
+            //if (auth != null && UserRequestValidation.isRequestValid(auth)) {
                 CampaignCreateRequestBO campaignCreateRequestBO = new CampaignCreateRequestBO();
 
                 campaignCreateRequestBO.setName(campaignCreateRequest.getName());
+                campaignCreateRequestBO.setMobileCsvPath(campaignCreateRequest.getMobileCsvPath());
+                campaignCreateRequestBO.setCouponCsvPath(campaignCreateRequest.getCouponCsvPath());
                 campaignCreateRequestBO.setDesc(campaignCreateRequest.getDesc());
                 campaignCreateRequestBO.setDates(campaignCreateRequest.getDates());
                 campaignCreateRequestBO.setNoOfPerson(campaignCreateRequest.getNoOfPerson());
@@ -54,9 +56,9 @@ public class CampaignService {
                 String id = campaignRequestHandler.createCampaign(campaignCreateRequestBO);
                 return ResponseGenerator.generateSuccessResponse(messageResponse, id);
 
-            } else {
+           /* } else {
                 return ResponseGenerator.generateResponse(UserRequestValidation.getUnautheticatedResponse());
-            }
+            }*/
         } catch (Exception e1) {
             e1.printStackTrace();
             MessageResponse messageResponse = new MessageResponse();

@@ -213,7 +213,7 @@ public class CustomerRequestHandler {
         return customers;
     }
 
-    public String verifyOtp(VerifyOtpRequestBO verifyOtpRequestBO) throws SQLException {
+    public String verifyOtp(VerifyOtpRequestBO verifyOtpRequestBO,String campaign) throws SQLException {
         VerifyOtpDTO verifyOtpDTO = new VerifyOtpDTO();
         CustomerDAO customerDAO = new CustomerDAO();
 
@@ -221,6 +221,13 @@ public class CustomerRequestHandler {
         verifyOtpDTO.setMobile(verifyOtpRequestBO.getMobile());
 
         String token = customerDAO.verifyOtp(verifyOtpDTO);
+
+        if(!token.equals("")) {
+            CampaignDAO campaignDAO = new CampaignDAO();
+            int id = campaignDAO.getId(campaign);
+            customerDAO.updateMobileFlag(verifyOtpRequestBO.getMobile(), id);
+        }
+
         return token;
     }
 
@@ -230,7 +237,7 @@ public class CustomerRequestHandler {
         int id = customerDAO.getCustomerId(otpRequestBO.getMobile(), campaignDTO.getId());
         String otp1 = customerDAO.getOtp(otpRequestBO.getMobile());
         if (id == 0) {
-            otp1 = verifyOtp(otp1, otpRequestBO.getMobile());
+            otp1 = verifyOtp1(otp1, otpRequestBO.getMobile());
             if (campaignDTO.getIsPublished() == 1) {
                 id = customerDAO.insertUser(buildUserDTOFromBO(otpRequestBO,campaignDTO.getId()));
             }
@@ -238,14 +245,14 @@ public class CustomerRequestHandler {
             sendSms.NewUserSignup(otpRequestBO.getMobile(), Integer.parseInt(otp1), smsDetails);
 
         } else {
-            otp1 = verifyOtp(otp1, otpRequestBO.getMobile());
+            otp1 = verifyOtp1(otp1, otpRequestBO.getMobile());
             SendSms sendSms = new SendSms();
             sendSms.NewUserSignup(otpRequestBO.getMobile(), Integer.parseInt(otp1), smsDetails);
         }
         return id;
     }
 
-    private String verifyOtp(String otp1, String mobileNumber) throws SQLException {
+    private String verifyOtp1(String otp1, String mobileNumber) throws SQLException {
 
         if (otp1 != null && otp1.equals("")) {
             CustomerDAO customerDAO = new CustomerDAO();
@@ -311,15 +318,6 @@ public class CustomerRequestHandler {
         slots1.setCapacity(coupon.getCapacity());
         times.add(slots1);
         return times;
-    }
-
-    public Boolean updateMobileFlag(MobileRequest mobileRequest) throws SQLException {
-        Boolean isProcessed;
-        CustomerDAO customerDAO = new CustomerDAO();
-        CampaignDAO campaignDAO = new CampaignDAO();
-        int id = campaignDAO.getId(mobileRequest.getCampaignId());
-        isProcessed = customerDAO.updateMobileFlag(mobileRequest.getMobile(),id);
-        return isProcessed;
     }
 
 }

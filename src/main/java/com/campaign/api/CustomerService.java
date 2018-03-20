@@ -167,7 +167,6 @@ public class CustomerService {
         MessageResponse messageResponse = new MessageResponse();
         try {
             if (customerRequestHandler.checkMobile(mobileRequest)) {
-                customerRequestHandler.updateMobileFlag(mobileRequest);
                 return ResponseGenerator.generateSuccessResponse(messageResponse, "SUCCESS");
             } else {
                 return ResponseGenerator.generateFailureResponse(messageResponse, "NotExist");
@@ -215,7 +214,7 @@ public class CustomerService {
         try {
             CampaignDAO campaignDAO = new CampaignDAO();
             if (campaignDAO.getStatus(verifyOtpRequest.getCampaignId()).equals("A")) {
-                String token = customerRequestHandler.verifyOtp(verifyOtpRequestBO);
+                String token = customerRequestHandler.verifyOtp(verifyOtpRequestBO,verifyOtpRequest.getCampaignId());
                 if (token.equals("")) {
                     return ResponseGenerator.generateFailureResponse(messageResponse, "Invalid otp.");
                 } else {

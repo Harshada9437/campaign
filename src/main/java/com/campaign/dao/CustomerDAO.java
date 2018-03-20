@@ -673,7 +673,7 @@ public class CustomerDAO {
             statement = connection.createStatement();
             StringBuilder query = new StringBuilder(
                     "SELECT mobile FROM mobile_details where mobile = \"")
-                    .append(mobile).append("\" and isRegistered=0 and campaign_master_id=" + id);
+                    .append(mobile).append("\" and campaign_master_id=" + id);
             ResultSet resultSet = statement.executeQuery(query.toString());
 
             while (resultSet.next()) {

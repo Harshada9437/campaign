@@ -4,20 +4,17 @@ import com.campaign.Exception.CampaignNotFoundException;
 import com.campaign.bo.request.CampaignCreateRequestBO;
 import com.campaign.bo.request.CampaignUpdateRequestBO;
 import com.campaign.dao.CampaignDAO;
-import com.campaign.dao.UtilClasses.ConnectionHandler;
 import com.campaign.dto.campaign.CampaignDTO;
-import com.campaign.rest.request.campaign.SlotDetails;
 import com.campaign.rest.response.campaign.CampaignInfoResponse;
 import com.campaign.rest.response.campaign.CampaignResponse;
 import com.campaign.rest.response.campaign.GetCampaignResponse;
 
-import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
 public class CampaignRequestHandler {
-    public String createCampaign(CampaignCreateRequestBO campaignCreateRequestBO) throws SQLException {
+    public String createCampaign(CampaignCreateRequestBO campaignCreateRequestBO) throws Exception {
         CampaignDAO campaignDAO = new CampaignDAO();
         String id = campaignDAO.createCampaign(buildCampagnDTOFromBO(campaignCreateRequestBO));
         return id;
@@ -26,6 +23,8 @@ public class CampaignRequestHandler {
     private CampaignDTO buildCampagnDTOFromBO(CampaignCreateRequestBO campaignCreateRequestBO) {
         CampaignDTO campaignDTO = new CampaignDTO();
         campaignDTO.setName(campaignCreateRequestBO.getName());
+        campaignDTO.setCouponCsvPath(campaignCreateRequestBO.getCouponCsvPath());
+        campaignDTO.setMobileCsvPath(campaignCreateRequestBO.getMobileCsvPath());
         campaignDTO.setEmailSubject(campaignCreateRequestBO.getEmailSubject());
         campaignDTO.setIsPublished(campaignCreateRequestBO.getIsPublished());
         campaignDTO.setDesc(campaignCreateRequestBO.getDesc());

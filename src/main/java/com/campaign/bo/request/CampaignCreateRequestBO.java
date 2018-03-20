@@ -13,6 +13,8 @@ public class CampaignCreateRequestBO {
    private int isPublished;
    private String name;
    private String campaignLocation;
+   private String mobileCsvPath;
+   private String couponCsvPath;
    private String emailSubject;
    private String desc;
    private String confirmSms;
@@ -23,7 +25,23 @@ public class CampaignCreateRequestBO {
    private List<SlotDetails> slots;
    private List<String> dates;
 
-   public int getIsPromoCampaign() {
+    public String getMobileCsvPath() {
+        return mobileCsvPath;
+    }
+
+    public void setMobileCsvPath(String mobileCsvPath) {
+        this.mobileCsvPath = mobileCsvPath;
+    }
+
+    public String getCouponCsvPath() {
+        return couponCsvPath;
+    }
+
+    public void setCouponCsvPath(String couponCsvPath) {
+        this.couponCsvPath = couponCsvPath;
+    }
+
+    public int getIsPromoCampaign() {
       return isPromoCampaign;
    }
 
@@ -175,6 +193,8 @@ public class CampaignCreateRequestBO {
       if (name != null ? !name.equals(that.name) : that.name != null) return false;
       if (emailSubject != null ? !emailSubject.equals(that.emailSubject) : that.emailSubject != null) return false;
       if (campaignLocation != null ? !campaignLocation.equals(that.campaignLocation) : that.campaignLocation != null) return false;
+      if (mobileCsvPath != null ? !mobileCsvPath.equals(that.mobileCsvPath) : that.mobileCsvPath != null) return false;
+      if (couponCsvPath != null ? !couponCsvPath.equals(that.couponCsvPath) : that.couponCsvPath != null) return false;
       if (desc != null ? !desc.equals(that.desc) : that.desc != null) return false;
       if (confirmSms != null ? !confirmSms.equals(that.confirmSms) : that.confirmSms != null) return false;
       if (confirmEmail != null ? !confirmEmail.equals(that.confirmEmail) : that.confirmEmail != null) return false;
@@ -195,6 +215,8 @@ public class CampaignCreateRequestBO {
       result = 31 * result + isPublished;
       result = 31 * result + isPromoCampaign;
       result = 31 * result + (campaignLocation != null ? campaignLocation.hashCode() : 0);
+      result = 31 * result + (couponCsvPath != null ? couponCsvPath.hashCode() : 0);
+      result = 31 * result + (mobileCsvPath != null ? mobileCsvPath.hashCode() : 0);
       result = 31 * result + (name != null ? name.hashCode() : 0);
       result = 31 * result + (emailSubject != null ? emailSubject.hashCode() : 0);
       result = 31 * result + (desc != null ? desc.hashCode() : 0);
@@ -220,6 +242,8 @@ public class CampaignCreateRequestBO {
               ", name='" + name + '\'' +
               ", campaignLocation='" + campaignLocation + '\'' +
               ", emailSubject='" + emailSubject + '\'' +
+              ", couponCsvPath='" + couponCsvPath + '\'' +
+              ", mobileCsvPath='" + mobileCsvPath + '\'' +
               ", desc='" + desc + '\'' +
               ", confirmSms='" + confirmSms + '\'' +
               ", confirmEmail='" + confirmEmail + '\'' +
